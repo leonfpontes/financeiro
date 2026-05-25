@@ -8,12 +8,14 @@ import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
+import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 
 const NAV = [
   { href: "/", label: "Fotografia", icon: PhotoCameraRoundedIcon },
   { href: "/entradas", label: "Entradas", icon: TrendingUpRoundedIcon },
   { href: "/gastos", label: "Gastos", icon: ReceiptLongRoundedIcon },
   { href: "/compromissos", label: "Compromissos", icon: AccountBalanceRoundedIcon },
+  { href: "/evolucao", label: "Evolução", icon: ShowChartRoundedIcon },
 ];
 
 export function BottomNav() {
