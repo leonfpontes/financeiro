@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ok, fail } from "@/lib/api-response";
 import { GastoTipo, PeriodoInput } from "@/generated/prisma";
+import { FaturaService } from "@/services/fatura.service";
 
 export const dynamic = "force-dynamic";
 
@@ -66,8 +67,10 @@ export async function GET(req: Request) {
   }
 
   const range = generateRange(de, ate);
+  const incluiAtual = range.includes(mesAnoAtual);
+  const faturaSvc = new FaturaService();
 
-  const [snapshots, realizados, entradas, gastos, compromissos, config] = await Promise.all([
+  const [snapshots, realizados, entradas, gastos, compromissos, config, cartoesAtual] = await Promise.all([
     prisma.snapshotMensal.findMany({
       where: { userId, mesAno: { in: range } },
     }),
@@ -78,7 +81,12 @@ export async function GET(req: Request) {
     prisma.gasto.findMany({ where: { userId, ativo: true } }),
     prisma.compromisso.findMany({ where: { userId, ativo: true } }),
     prisma.configUsuario.findUnique({ where: { userId } }),
+    incluiAtual
+      ? faturaSvc.getFaturaResumoTodosCartoes(userId, mesAnoAtual)
+      : Promise.resolve([]),
   ]);
+
+  const totalCartoesAtual = cartoesAtual.reduce((s, c) => s + c.total, 0);
 
   const snapMap = new Map(snapshots.map((s) => [s.mesAno, s]));
   const realizadoMap = new Map<string, Record<string, number>>();
@@ -103,6 +111,7 @@ export async function GET(req: Request) {
       let pGastosFixos: number;
       let pGastosVariaveis: number;
       let pGastosSazonais: number;
+      let pGastosCartoes: number;
       let pMargemPercent: number;
 
       if (snap) {
@@ -111,6 +120,7 @@ export async function GET(req: Request) {
         pGastosFixos     = Number(snap.gastosFixos);
         pGastosVariaveis = Number(snap.gastosVariaveis);
         pGastosSazonais  = Number(snap.gastosSazonais);
+        pGastosCartoes   = Number(snap.gastosCartoes);
         pMargemPercent   = Number(snap.margemPercent);
       } else {
         // Mês atual: sempre ao vivo
@@ -129,11 +139,12 @@ export async function GET(req: Request) {
         pGastosFixos     = activeGastos.filter((g) => g.tipo === GastoTipo.FIXO).reduce((acc, g) => acc + Number(g.valor), 0);
         pGastosVariaveis = activeGastos.filter((g) => g.tipo === GastoTipo.VARIAVEL).reduce((acc, g) => acc + calcGastoMensal(Number(g.valor), g.tipo, g.periodoInput, g.mesesOcorrencia), 0);
         pGastosSazonais  = activeGastos.filter((g) => g.tipo === GastoTipo.SAZONAL).reduce((acc, g) => acc + calcGastoMensal(Number(g.valor), g.tipo, g.periodoInput, g.mesesOcorrencia), 0);
+        pGastosCartoes   = totalCartoesAtual;
         pMargemPercent   = margemPercent;
       }
 
       const pMargem     = (pMargemPercent / 100) * pEntradas;
-      const totalGastos = pCompromissos + pGastosFixos + pGastosVariaveis + pGastosSazonais;
+      const totalGastos = pCompromissos + pGastosFixos + pGastosVariaveis + pGastosSazonais + pGastosCartoes;
       const totalSaidas = totalGastos + pMargem;
       const disponivel  = pEntradas - totalSaidas;
       const comprometidoPercent = pEntradas > 0 ? (totalSaidas / pEntradas) * 100 : 0;
@@ -148,6 +159,7 @@ export async function GET(req: Request) {
         gastosFixos:         pGastosFixos,
         gastosVariaveis:     pGastosVariaveis,
         gastosSazonais:      pGastosSazonais,
+        gastosCartoes:       pGastosCartoes,
         margem:              pMargem,
         margemPercent:       pMargemPercent,
         totalGastos,

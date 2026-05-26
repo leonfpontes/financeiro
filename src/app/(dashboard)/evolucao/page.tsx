@@ -58,6 +58,7 @@ interface MesData {
   gastosFixos:         number;
   gastosVariaveis:     number;
   gastosSazonais:      number;
+  gastosCartoes:       number;
   margem:              number;
   margemPercent:       number;
   totalGastos:         number;
@@ -316,6 +317,7 @@ export default function EvolucaoPage() {
       gastosFixos:    s.gastosFixos,
       gastosVariaveis: s.gastosVariaveis,
       gastosSazonais:  s.gastosSazonais,
+      gastosCartoes:   s.gastosCartoes,
       compromissos:   s.compromissos,
       comprometido:   parseFloat(s.comprometidoPercent.toFixed(1)),
       // planejado vs realizado (total saídas)
@@ -525,7 +527,8 @@ export default function EvolucaoPage() {
               <Bar dataKey="gastosFixos"     name="Fixos"        stackId="s" fill="#f97316" radius={[0,0,0,0]} />
               <Bar dataKey="gastosVariaveis" name="Variáveis"    stackId="s" fill="#eab308" radius={[0,0,0,0]} />
               <Bar dataKey="gastosSazonais"  name="Sazonais"     stackId="s" fill="#a855f7" radius={[0,0,0,0]} />
-              <Bar dataKey="compromissos"    name="Compromissos" stackId="s" fill="#3b82f6" radius={[4,4,0,0]} />
+              <Bar dataKey="compromissos"    name="Compromissos" stackId="s" fill="#3b82f6" radius={[0,0,0,0]} />
+              <Bar dataKey="gastosCartoes"   name="Cartões"      stackId="s" fill="#ec4899" radius={[4,4,0,0]} />
               <Line type="monotone" dataKey="entradas" name="Entradas" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", strokeWidth: 0, r: 3 }} activeDot={{ r: 5, strokeWidth: 0 }} />
             </ComposedChart>
           </ResponsiveContainer>
@@ -538,8 +541,7 @@ export default function EvolucaoPage() {
           <SectionHeader
             title="% da Renda Comprometida"
             subtitle="Percentual mensal comprometido com gastos e compromissos"
-            info="Inclui gastos fixos, variáveis, sazonais, compromissos e margem reservada. Meta: abaixo de 85%."
-          />
+            info="Inclui gastos fixos, variáveis, sazonais, compromissos, faturas de cartão e margem reservada. Meta: abaixo de 85%."          />
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
             <Chip
               label="Meta: 85%"
