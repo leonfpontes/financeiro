@@ -37,9 +37,6 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
-  defs,
-  linearGradient,
-  stop,
 } from "recharts";
 import { formatBRL } from "@/lib/utils/currency";
 
