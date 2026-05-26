@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string })?.id;
-  if (!userId) return fail("UNAUTHORIZED", "Não autenticado", 401);
+  if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autenticado", 401), { status: 401 });
 
   let mesAnos: string[] | undefined;
   try {
@@ -27,5 +27,5 @@ export async function DELETE(req: NextRequest) {
 
   const { count } = await prisma.snapshotMensal.deleteMany({ where });
 
-  return ok({ deleted: count });
+  return NextResponse.json(ok({ deleted: count }));
 }
