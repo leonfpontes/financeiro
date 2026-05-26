@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { ok, fail } from "@/lib/api-response";
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({ data: { name, email, passwordHash } });
 
-    return ok({ id: user.id, name: user.name, email: user.email }, 201);
+    return NextResponse.json(ok({ id: user.id, name: user.name, email: user.email }), { status: 201 });
   } catch {
     return fail("INTERNAL_ERROR", "Erro interno", 500);
   }
