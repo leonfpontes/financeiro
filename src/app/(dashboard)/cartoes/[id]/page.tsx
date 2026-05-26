@@ -7,12 +7,15 @@ import Typography from "@mui/material/Typography";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Drawer from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
+import LinearProgress from "@mui/material/LinearProgress";
+import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Skeleton from "@mui/material/Skeleton";
@@ -308,6 +311,7 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
         {/* Fatura totals — 3 metrics */}
         {faturaData && (() => {
           const disponivel = cartao.limite - faturaData.fatura.total;
+          const usoPercent = cartao.limite > 0 ? Math.min((faturaData.fatura.total / cartao.limite) * 100, 100) : 0;
           const dispColor = disponivel < 0 ? "#ef4444" : disponivel < cartao.limite * 0.15 ? "#f59e0b" : "#22c55e";
           return (
             <Box sx={{ ml: 4, mt: 1.5, display: "flex", gap: { xs: 2.5, sm: 4 }, flexWrap: "wrap" }}>
@@ -322,6 +326,24 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
               <Box>
                 <Typography variant="caption" color="text.secondary">Vencimento</Typography>
                 <Typography sx={{ fontWeight: 600, fontSize: "1rem", lineHeight: 1.2, mt: 0.3 }}>Dia {cartao.diaVencimento}</Typography>
+              </Box>
+              <Box sx={{ minWidth: 140 }}>
+                <Typography variant="caption" color="text.secondary">Uso do limite</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: "1rem", lineHeight: 1.2, mt: 0.3 }}>{usoPercent.toFixed(0)}%</Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={usoPercent}
+                  sx={{
+                    mt: 0.7,
+                    height: 6,
+                    borderRadius: 99,
+                    bgcolor: "rgba(15,23,42,0.08)",
+                    "& .MuiLinearProgress-bar": {
+                      borderRadius: 99,
+                      bgcolor: usoPercent >= 90 ? "#ef4444" : usoPercent >= 70 ? "#f59e0b" : cor,
+                    },
+                  }}
+                />
               </Box>
               {/* Pagamento */}
               <Box sx={{ ml: { xs: 0, sm: "auto" }, display: "flex", alignItems: "center", gap: 1, pl: { sm: 2 }, borderLeft: { sm: "1px solid rgba(0,0,0,0.08)" } }}>
@@ -376,6 +398,44 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
             <Skeleton variant="rounded" height={220} sx={{ borderRadius: 2 }} />
           ) : faturaData ? (
             <>
+              {(() => {
+                const totalAnterior = faturaData.historico.length > 0
+                  ? faturaData.historico[faturaData.historico.length - 1].total
+                  : 0;
+                const delta = faturaData.fatura.total - totalAnterior;
+                const deltaPercent = totalAnterior > 0 ? (delta / totalAnterior) * 100 : 0;
+
+                return (
+                  <Box
+                    sx={{
+                      mb: 2,
+                      p: 1.8,
+                      borderRadius: 2,
+                      border: "1px solid",
+                      borderColor: "divider",
+                      bgcolor: "background.paper",
+                    }}
+                  >
+                    <Typography sx={{ fontSize: "0.75rem", color: "text.secondary", mb: 1 }}>Resumo da leitura</Typography>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                      <Chip label={`Assinaturas: ${formatBRL(faturaData.fatura.totalAssinaturas)}`} size="small" sx={{ justifyContent: "flex-start", bgcolor: "#f5f3ff", color: "#6d28d9" }} />
+                      <Chip label={`Parcelamentos: ${formatBRL(faturaData.fatura.totalParcelamentos)}`} size="small" sx={{ justifyContent: "flex-start", bgcolor: "#fffbeb", color: "#b45309" }} />
+                      <Chip label={`Avulsos: ${formatBRL(faturaData.fatura.totalAvulsos)}`} size="small" sx={{ justifyContent: "flex-start", bgcolor: "#eef2ff", color: "#4338ca" }} />
+                      <Chip
+                        label={delta >= 0 ? `+${deltaPercent.toFixed(0)}% vs mês anterior` : `${deltaPercent.toFixed(0)}% vs mês anterior`}
+                        size="small"
+                        sx={{
+                          justifyContent: "flex-start",
+                          bgcolor: delta >= 0 ? "#fff1f2" : "#f0fdf4",
+                          color: delta >= 0 ? "#be123c" : "#166534",
+                          fontWeight: 600,
+                        }}
+                      />
+                    </Stack>
+                  </Box>
+                );
+              })()}
+
               <FaturaChart
                 historico={faturaData.historico}
                 mesAtual={{ mesAno, total: faturaData.fatura.total }}
@@ -385,24 +445,69 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
               <Divider sx={{ my: 2 }} />
               {/* Breakdown */}
               {[
-                { label: "Assinaturas", total: faturaData.fatura.totalAssinaturas, items: faturaData.fatura.assinaturas.map((a) => ({ key: a.id, primary: a.nome, secondary: "recorrente", value: a.valor })) },
-                { label: "Parcelamentos", total: faturaData.fatura.totalParcelamentos, items: faturaData.fatura.parcelamentos.map((p) => ({ key: p.id, primary: p.nome, secondary: `Parcela ${p.parcelaAtual}/${p.numeroParcelas}`, value: p.valorParcela })) },
-                { label: "Avulsos", total: faturaData.fatura.totalAvulsos, items: faturaData.fatura.avulsos.map((a) => ({ key: a.id, primary: a.nome, secondary: "avulso", value: a.valor })) },
-              ].map(({ label, total, items }) => items.length > 0 && (
-                <Box key={label} sx={{ mb: 2 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                    <Typography variant="subtitle2" color="text.secondary">{label}</Typography>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{formatBRL(total)}</Typography>
-                  </Box>
-                  {items.map((item) => (
-                    <Box key={item.key} sx={{ display: "flex", justifyContent: "space-between", py: 0.75, borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <Box>
-                        <Typography sx={{ fontSize: "0.875rem" }}>{item.primary}</Typography>
-                        <Typography variant="caption" color="text.secondary">{item.secondary}</Typography>
-                      </Box>
-                      <Typography sx={{ fontSize: "0.875rem", fontWeight: 600 }}>{formatBRL(item.value)}</Typography>
+                {
+                  label: "Assinaturas",
+                  total: faturaData.fatura.totalAssinaturas,
+                  color: "#8b5cf6",
+                  chipBg: "#f5f3ff",
+                  chipColor: "#6d28d9",
+                  emptyText: "Sem cobranças recorrentes neste mês",
+                  items: faturaData.fatura.assinaturas.map((a) => ({ key: a.id, primary: a.nome, secondary: "recorrente", value: a.valor, tag: "Recorrente" })),
+                },
+                {
+                  label: "Parcelamentos",
+                  total: faturaData.fatura.totalParcelamentos,
+                  color: "#f59e0b",
+                  chipBg: "#fffbeb",
+                  chipColor: "#b45309",
+                  emptyText: "Sem parcelas ativas neste mês",
+                  items: faturaData.fatura.parcelamentos.map((p) => ({ key: p.id, primary: p.nome, secondary: `Parcela ${p.parcelaAtual}/${p.numeroParcelas}`, value: p.valorParcela, tag: `${p.parcelaAtual}/${p.numeroParcelas}` })),
+                },
+                {
+                  label: "Avulsos",
+                  total: faturaData.fatura.totalAvulsos,
+                  color: cor,
+                  chipBg: "#eef2ff",
+                  chipColor: "#4338ca",
+                  emptyText: "Sem lançamentos avulsos neste mês",
+                  items: faturaData.fatura.avulsos.map((a) => ({ key: a.id, primary: a.nome, secondary: "lançamento único", value: a.valor, tag: "Avulso" })),
+                },
+              ].map(({ label, total, items, color, chipBg, chipColor, emptyText }) => (
+                <Box
+                  key={label}
+                  sx={{
+                    mb: 1.5,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                    bgcolor: "background.paper",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Box sx={{ px: 1.6, py: 1.1, borderBottom: "1px solid", borderColor: "divider", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1, background: `${color}10` }}>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{label}</Typography>
+                      <Typography variant="caption" color="text.secondary">{items.length} item{items.length !== 1 ? "s" : ""}</Typography>
                     </Box>
-                  ))}
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color }}>{formatBRL(total)}</Typography>
+                  </Box>
+
+                  {items.length === 0 ? (
+                    <Typography sx={{ px: 1.6, py: 1.3, fontSize: "0.82rem", color: "text.secondary" }}>{emptyText}</Typography>
+                  ) : (
+                    items.map((item, index) => (
+                      <Box key={item.key} sx={{ px: 1.6, py: 1.1, display: "flex", justifyContent: "space-between", gap: 1.2, borderBottom: index === items.length - 1 ? "none" : "1px solid", borderColor: "divider" }}>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography sx={{ fontSize: "0.9rem", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.primary}</Typography>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, mt: 0.3 }}>
+                            <Typography variant="caption" color="text.secondary">{item.secondary}</Typography>
+                            <Chip label={item.tag} size="small" sx={{ height: 20, fontSize: "0.68rem", bgcolor: chipBg, color: chipColor, fontWeight: 700 }} />
+                          </Box>
+                        </Box>
+                        <Typography sx={{ fontSize: "0.9rem", fontWeight: 700, flexShrink: 0 }}>{formatBRL(item.value)}</Typography>
+                      </Box>
+                    ))
+                  )}
                 </Box>
               ))}
             </>
