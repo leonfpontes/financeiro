@@ -281,6 +281,10 @@ export default function GastosPage() {
     localStorage.setItem("gastos_view_mode", mode);
   };
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isDark = theme.palette.mode === "dark";
+
   const tabColors = ["#f97316", "#eab308", "#a855f7"];
   const tabBgs = isDark ? ["rgba(249,115,22,0.10)", "rgba(234,179,8,0.10)", "rgba(168,85,247,0.10)"] : ["#fff7ed", "#fefce8", "#faf5ff"];
   const tabBorders = isDark ? ["rgba(249,115,22,0.22)", "rgba(234,179,8,0.22)", "rgba(168,85,247,0.22)"] : ["#fed7aa", "#fde68a", "#e9d5ff"];
@@ -306,9 +310,6 @@ export default function GastosPage() {
   const valPreview = valorCents / 100;
   const previewMensal = tipo === "VARIAVEL" && periodoInput === "SEMANAL" ? valPreview * SEMANAS_MES
     : tipo === "SAZONAL" ? (valPreview * meses.length) / 12 : 0;
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isDark = theme.palette.mode === "dark";
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
