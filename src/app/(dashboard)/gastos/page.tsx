@@ -93,11 +93,11 @@ function formatPeriodo(dataInicio: string | null | undefined, dataFim: string | 
 }
 
 type GastoStatus = "ativo" | "inativo" | "encerrado" | "futuro";
-const STATUS_CONFIG: Record<GastoStatus, { label: string; color: string; bg: string }> = {
-  ativo:     { label: "Ativo",     color: "#16a34a", bg: "#dcfce7" },
-  inativo:   { label: "Inativo",   color: "#64748b", bg: "#f1f5f9" },
-  encerrado: { label: "Encerrado", color: "#dc2626", bg: "#fee2e2" },
-  futuro:    { label: "Futuro",    color: "#2563eb", bg: "#dbeafe" },
+const STATUS_CONFIG: Record<GastoStatus, { label: string; color: string; bg: string; darkBg: string }> = {
+  ativo:     { label: "Ativo",     color: "#16a34a", bg: "#dcfce7", darkBg: "rgba(22,163,74,0.12)" },
+  inativo:   { label: "Inativo",   color: "#64748b", bg: "#f1f5f9", darkBg: "rgba(100,116,139,0.12)" },
+  encerrado: { label: "Encerrado", color: "#dc2626", bg: "#fee2e2", darkBg: "rgba(220,38,38,0.12)" },
+  futuro:    { label: "Futuro",    color: "#2563eb", bg: "#dbeafe", darkBg: "rgba(37,99,235,0.12)" },
 };
 
 function getStatus(item: Gasto, todayStr: string): GastoStatus {
@@ -282,8 +282,8 @@ export default function GastosPage() {
   };
 
   const tabColors = ["#f97316", "#eab308", "#a855f7"];
-  const tabBgs = ["#fff7ed", "#fefce8", "#faf5ff"];
-  const tabBorders = ["#fed7aa", "#fde68a", "#e9d5ff"];
+  const tabBgs = isDark ? ["rgba(249,115,22,0.10)", "rgba(234,179,8,0.10)", "rgba(168,85,247,0.10)"] : ["#fff7ed", "#fefce8", "#faf5ff"];
+  const tabBorders = isDark ? ["rgba(249,115,22,0.22)", "rgba(234,179,8,0.22)", "rgba(168,85,247,0.22)"] : ["#fed7aa", "#fde68a", "#e9d5ff"];
   const tabTipos: ("FIXO" | "VARIAVEL" | "SAZONAL")[] = ["FIXO", "VARIAVEL", "SAZONAL"];
   const TIPO_GASTO_CONFIG = {
     FIXO:     { color: tabColors[0], bg: tabBgs[0], border: tabBorders[0], label: "Fixo",     Icon: RepeatRoundedIcon,      desc: "Mesmo valor todo mês — aluguel, assinaturas, parcelas..." },
@@ -308,6 +308,7 @@ export default function GastosPage() {
     : tipo === "SAZONAL" ? (valPreview * meses.length) / 12 : 0;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isDark = theme.palette.mode === "dark";
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -390,7 +391,7 @@ export default function GastosPage() {
               >
                 <CardContent sx={{ p: 2, "&:last-child": { pb: 2 }, display: "flex", flexDirection: "column", gap: 1.5 }}>
                   <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <Chip label={sc.label} size="small" sx={{ bgcolor: sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20 }} />
+                    <Chip label={sc.label} size="small" sx={{ bgcolor: isDark ? sc.darkBg : sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20 }} />
                     <IconButton size="small" onClick={(e) => { setMenuAnchor(e.currentTarget); setMenuItemId(item.id); }}>
                       <MoreVertRoundedIcon fontSize="small" />
                     </IconButton>
@@ -429,7 +430,7 @@ export default function GastosPage() {
                       <LinearProgress
                         variant="determinate"
                         value={metrics.periodProgress}
-                        sx={{ borderRadius: 1, height: 6, bgcolor: sc.bg, "& .MuiLinearProgress-bar": { bgcolor: sc.color } }}
+                        sx={{ borderRadius: 1, height: 6, bgcolor: isDark ? sc.darkBg : sc.bg, "& .MuiLinearProgress-bar": { bgcolor: sc.color } }}
                       />
                     </Box>
                   )}
@@ -484,7 +485,7 @@ export default function GastosPage() {
                         <Chip
                           label={sc.label}
                           size="small"
-                          sx={{ bgcolor: sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20, flexShrink: 0 }}
+                          sx={{ bgcolor: isDark ? sc.darkBg : sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20, flexShrink: 0 }}
                         />
                       </Box>
                       {(item.tipo === "VARIAVEL" || item.tipo === "SAZONAL") && (

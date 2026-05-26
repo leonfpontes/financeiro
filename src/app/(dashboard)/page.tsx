@@ -28,6 +28,7 @@ import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import SavingsRoundedIcon from "@mui/icons-material/SavingsRounded";
 import { formatBRL } from "@/lib/utils/currency";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
+import { useTheme } from "@mui/material/styles";
 
 const MONTH_NAMES = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
@@ -147,6 +148,9 @@ export default function FotografiaPage() {
     setSavingNotas(false);
   };
 
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   if (loading) return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 3 }} />
@@ -162,7 +166,7 @@ export default function FotografiaPage() {
       <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: "-0.02em" }}>
         {`Olá, ${firstName}! \u{1F44B}`}
       </Typography>
-      <Card sx={{ border: "2px dashed #c7d2fe", background: "#fafafe" }}>
+      <Card sx={{ border: isDark ? "2px dashed rgba(99,102,241,0.30)" : "2px dashed #c7d2fe", bgcolor: isDark ? "background.paper" : "#fafafe" }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: "#4f46e5" }}>
             Configure sua Fotografia Financeira
@@ -176,7 +180,7 @@ export default function FotografiaPage() {
               { step: "2", href: "/gastos", label: "Cadastre seus Gastos", desc: "Fixos, variáveis e sazonais" },
               { step: "3", href: "/compromissos", label: "Cadastre seus Compromissos", desc: "Dívidas, investimentos e sonhos" },
             ].map(({ step, href, label, desc }) => (
-              <Box key={step} component={Link} href={href} sx={{ display: "flex", alignItems: "center", gap: 2, p: 2, borderRadius: 2, border: "1px solid #e0e7ff", bgcolor: "white", textDecoration: "none", "&:hover": { bgcolor: "#eef2ff" }, transition: "background 0.15s" }}>
+              <Box key={step} component={Link} href={href} sx={{ display: "flex", alignItems: "center", gap: 2, p: 2, borderRadius: 2, border: isDark ? "1px solid rgba(99,102,241,0.15)" : "1px solid #e0e7ff", bgcolor: "background.paper", textDecoration: "none", "&:hover": { bgcolor: isDark ? "background.default" : "#eef2ff" }, transition: "background 0.15s" }}>
                 <Box sx={{ width: 36, height: 36, borderRadius: "50%", bgcolor: "#6366f1", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1rem", flexShrink: 0 }}>{step}</Box>
                 <Box>
                   <Typography variant="body2" sx={{ fontWeight: 700, color: "#1e293b" }}>{label}</Typography>
@@ -197,12 +201,12 @@ export default function FotografiaPage() {
   const comprometidoBarW = Math.min(comprometidoPercent, 100);
 
   const cardConfig = [
-    { key: "ENTRADAS",        label: "Entradas",          icon: TrendingUpRoundedIcon,     color: "#10b981", bg: "#ecfdf5", border: "#a7f3d0", valor: entradas.totalPlanejado },
-    { key: "COMPROMISSOS",    label: "Compromissos",       icon: AccountBalanceRoundedIcon, color: "#6366f1", bg: "#eef2ff", border: "#c7d2fe", valor: compromissos.totalMensal },
-    { key: "GASTOS_FIXOS",    label: "Gastos Fixos",       icon: LockRoundedIcon,           color: "#f97316", bg: "#fff7ed", border: "#fed7aa", valor: gastos.fixos.total },
-    { key: "GASTOS_VARIAVEIS",label: "Gastos Variáveis",   icon: ShoppingCartRoundedIcon,   color: "#eab308", bg: "#fefce8", border: "#fde68a", valor: gastos.variaveis.totalMensal },
-    { key: "GASTOS_SAZONAIS", label: "Gastos Sazonais",    icon: AutoAwesomeRoundedIcon,    color: "#a855f7", bg: "#faf5ff", border: "#e9d5ff", valor: gastos.sazonais.totalMensal },
-    { key: "MARGEM",          label: `Margem (${margem.percent}%)`, icon: SavingsRoundedIcon, color: "#64748b", bg: "#f8fafc", border: "#e2e8f0", valor: margem.valor },
+    { key: "ENTRADAS",        label: "Entradas",          icon: TrendingUpRoundedIcon,     color: "#10b981", bg: isDark ? "rgba(16,185,129,0.10)" : "#ecfdf5", border: isDark ? "rgba(16,185,129,0.22)" : "#a7f3d0", valor: entradas.totalPlanejado },
+    { key: "COMPROMISSOS",    label: "Compromissos",       icon: AccountBalanceRoundedIcon, color: "#6366f1", bg: isDark ? "rgba(99,102,241,0.10)" : "#eef2ff", border: isDark ? "rgba(99,102,241,0.22)" : "#c7d2fe", valor: compromissos.totalMensal },
+    { key: "GASTOS_FIXOS",    label: "Gastos Fixos",       icon: LockRoundedIcon,           color: "#f97316", bg: isDark ? "rgba(249,115,22,0.10)" : "#fff7ed", border: isDark ? "rgba(249,115,22,0.22)" : "#fed7aa", valor: gastos.fixos.total },
+    { key: "GASTOS_VARIAVEIS",label: "Gastos Variáveis",   icon: ShoppingCartRoundedIcon,   color: "#eab308", bg: isDark ? "rgba(234,179,8,0.10)" : "#fefce8", border: isDark ? "rgba(234,179,8,0.22)" : "#fde68a", valor: gastos.variaveis.totalMensal },
+    { key: "GASTOS_SAZONAIS", label: "Gastos Sazonais",    icon: AutoAwesomeRoundedIcon,    color: "#a855f7", bg: isDark ? "rgba(168,85,247,0.10)" : "#faf5ff", border: isDark ? "rgba(168,85,247,0.22)" : "#e9d5ff", valor: gastos.sazonais.totalMensal },
+    { key: "MARGEM",          label: `Margem (${margem.percent}%)`, icon: SavingsRoundedIcon, color: "#64748b", bg: isDark ? "rgba(100,116,139,0.10)" : "#f8fafc", border: isDark ? "rgba(100,116,139,0.22)" : "#e2e8f0", valor: margem.valor },
   ];
 
   return (
@@ -218,7 +222,7 @@ export default function FotografiaPage() {
           position: "sticky",
           top: { xs: 56, md: 0 },
           zIndex: 10,
-          bgcolor: "#f8fafc",
+          bgcolor: "background.default",
           py: 1,
           mx: { xs: -2, md: 0 },
           px: { xs: 2, md: 0 },
@@ -281,7 +285,7 @@ export default function FotografiaPage() {
             <CardContent sx={{ p: 2.5 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
                 <Icon sx={{ color, fontSize: 20 }} />
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   {label}
                 </Typography>
               </Box>
@@ -313,7 +317,7 @@ export default function FotografiaPage() {
                   <Chip
                     size="small"
                     label={`Real: ${formatBRL(realizado[key]!)}`}
-                    sx={{ bgcolor: "white", border: `1px solid ${border}`, fontSize: "0.7rem" }}
+                    sx={{ bgcolor: "background.paper", border: `1px solid ${border}`, fontSize: "0.7rem" }}
                   />
                   {realizado[key]! > valor && key !== "ENTRADAS" && (
                     <Chip size="small" label="acima" color="error" sx={{ fontSize: "0.7rem" }} />
@@ -329,9 +333,9 @@ export default function FotografiaPage() {
       </Box>
 
       {/* Fórmula cascata */}
-      <Card sx={{ border: "1px solid #e2e8f0" }}>
+      <Card sx={{ border: "1px solid", borderColor: "divider" }}>
         <CardContent sx={{ p: 2.5 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: "#475569" }}>Fórmula do Mês</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: "text.secondary" }}>Fórmula do Mês</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
             {[
               { label: "+ Entradas",             valor: entradas.totalPlanejado,          color: "success.main" },
@@ -407,10 +411,10 @@ export default function FotografiaPage() {
       })()}
 
       {/* Plano de Ação */}
-      <Card sx={{ border: "1px solid #e2e8f0" }}>
+      <Card sx={{ border: "1px solid", borderColor: "divider" }}>
         <CardContent sx={{ p: 2.5 }}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }} onClick={() => setPlanoAberto((p) => !p)}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#475569" }}>Plano de Ação</Typography>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "text.secondary" }}>Plano de Ação</Typography>
             {planoAberto ? <ExpandLessRoundedIcon fontSize="small" /> : <ExpandMoreRoundedIcon fontSize="small" />}
           </Box>
           <Collapse in={planoAberto}>

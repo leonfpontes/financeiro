@@ -64,21 +64,21 @@ interface Compromisso {
 const TIPO_CONFIG = {
   DIVIDA: {
     label: "Dívidas", itemLabel: "Dívida",
-    color: "#f43f5e", bg: "#fff1f2", border: "#fecdd3",
+    color: "#f43f5e", bg: "#fff1f2", border: "#fecdd3", darkBg: "rgba(244,63,94,0.10)", darkBorder: "rgba(244,63,94,0.22)",
     tip: "Dívidas têm prioridade máxima — devem ser quitadas antes de investir ou sonhar.",
     emptyTitle: "Nenhuma dívida registrada",
     emptyMsg: "Ótimo! Sem dívidas cadastradas. Continue assim.",
   },
   INVESTIMENTO: {
     label: "Investimentos", itemLabel: "Investimento",
-    color: "#6366f1", bg: "#eef2ff", border: "#c7d2fe",
+    color: "#6366f1", bg: "#eef2ff", border: "#c7d2fe", darkBg: "rgba(99,102,241,0.10)", darkBorder: "rgba(99,102,241,0.22)",
     tip: "Investimentos constroem seu patrimônio. Pague-se primeiro!",
     emptyTitle: "Sem investimentos ainda",
     emptyMsg: "Que tal começar com um aporte mensal? Pequenos valores fazem diferença.",
   },
   SONHO: {
     label: "Sonhos", itemLabel: "Sonho",
-    color: "#f59e0b", bg: "#fffbeb", border: "#fde68a",
+    color: "#f59e0b", bg: "#fffbeb", border: "#fde68a", darkBg: "rgba(245,158,11,0.10)", darkBorder: "rgba(245,158,11,0.22)",
     tip: "Reservas para objetivos específicos: viagem, carro, casa própria...",
     emptyTitle: "Nenhum sonho definido",
     emptyMsg: "Defina um objetivo e reserve um valor mensal para realizá-lo.",
@@ -189,6 +189,7 @@ export default function CompromissosPage() {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isDark = theme.palette.mode === "dark";
   const menuItem = items.find((i) => i.id === menuItemId);
 
   return (
@@ -219,7 +220,7 @@ export default function CompromissosPage() {
           const cfg = TIPO_CONFIG[tipoKey];
           const subtotal = items.filter((i) => i.tipo === tipoKey && i.ativo).reduce((acc, i) => acc + parseFloat(i.valorMensal), 0);
           return (
-            <Card key={tipoKey} sx={{ border: `1px solid ${cfg.border}`, borderTop: `3px solid ${cfg.color}`, bgcolor: cfg.bg }}>
+            <Card key={tipoKey} sx={{ border: `1px solid ${isDark ? cfg.darkBorder : cfg.border}`, borderTop: `3px solid ${cfg.color}`, bgcolor: isDark ? cfg.darkBg : cfg.bg }}>
               <CardContent sx={{ p: { xs: 1.25, sm: 1.75 }, "&:last-child": { pb: { xs: 1.25, sm: 1.75 } } }}>
                 <Typography sx={{ fontSize: "0.6rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: cfg.color, mb: 0.25 }}>
                   {cfg.label}
@@ -253,13 +254,13 @@ export default function CompromissosPage() {
                   <Typography variant="caption" sx={{ fontWeight: 700, color: cfg.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {cfg.label}
                   </Typography>
-                  <Box sx={{ flex: 1, height: "1px", bgcolor: cfg.border }} />
+                  <Box sx={{ flex: 1, height: "1px", bgcolor: isDark ? cfg.darkBorder : cfg.border }} />
                 </Box>
                 <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", xl: "repeat(3, 1fr)" }, gap: 2 }}>
                   {group.map((item) => {
                     const valor = parseFloat(item.valorMensal);
                     return (
-                      <Card key={item.id} sx={{ border: `1px solid ${cfg.border}`, borderLeft: `4px solid ${cfg.color}`, bgcolor: cfg.bg, opacity: item.ativo ? 1 : 0.6 }}>
+                      <Card key={item.id} sx={{ border: `1px solid ${isDark ? cfg.darkBorder : cfg.border}`, borderLeft: `4px solid ${cfg.color}`, bgcolor: isDark ? cfg.darkBg : cfg.bg, opacity: item.ativo ? 1 : 0.6 }}>
                         <CardContent sx={{ p: 2, "&:last-child": { pb: 2 }, display: "flex", flexDirection: "column", gap: 1.5 }}>
                           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                             <Chip

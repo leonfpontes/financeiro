@@ -56,12 +56,12 @@ interface Entrada {
 }
 
 const TIPO_CONFIG = {
-  FIXA:     { label: "Fixa",     color: "#10b981", bg: "#f0fdf4", border: "#a7f3d0" },
-  VARIAVEL: { label: "Variável", color: "#3b82f6", bg: "#eff6ff", border: "#bfdbfe" },
+  FIXA:     { label: "Fixa",     color: "#10b981", bg: "#f0fdf4", border: "#a7f3d0", darkBg: "rgba(16,185,129,0.10)", darkBorder: "rgba(16,185,129,0.22)" },
+  VARIAVEL: { label: "Variável", color: "#3b82f6", bg: "#eff6ff", border: "#bfdbfe", darkBg: "rgba(59,130,246,0.10)", darkBorder: "rgba(59,130,246,0.22)" },
 };
 const STATUS_CONFIG = {
-  ativo:   { label: "Ativa",   color: "#16a34a", bg: "#dcfce7" },
-  inativo: { label: "Inativa", color: "#64748b", bg: "#f1f5f9" },
+  ativo:   { label: "Ativa",   color: "#16a34a", bg: "#dcfce7", darkBg: "rgba(22,163,74,0.12)" },
+  inativo: { label: "Inativa", color: "#64748b", bg: "#f1f5f9", darkBg: "rgba(100,116,139,0.12)" },
 };
 
 const TIPO_ICONS_ENTRADA = {
@@ -159,6 +159,7 @@ export default function EntradasPage() {
   const total = items.filter((i) => i.ativo).reduce((acc, i) => acc + parseFloat(i.valor), 0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isDark = theme.palette.mode === "dark";
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -197,7 +198,7 @@ export default function EntradasPage() {
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} variant="rectangular" height={72} sx={{ borderRadius: 2 }} />)}
         </Box>
       ) : items.length === 0 ? (
-        <Card sx={{ border: "2px dashed #a7f3d0", bgcolor: "#f0fdf4" }}>
+        <Card sx={{ border: isDark ? "2px dashed rgba(16,185,129,0.30)" : "2px dashed #a7f3d0", bgcolor: isDark ? "rgba(16,185,129,0.05)" : "#f0fdf4" }}>
           <CardContent sx={{ p: 4, textAlign: "center" }}>
             <Typography color="text.secondary">Nenhuma entrada cadastrada ainda.</Typography>
             <Button variant="outlined" onClick={openNew} sx={{ mt: 2 }}>Cadastrar primeira entrada</Button>
@@ -210,10 +211,10 @@ export default function EntradasPage() {
             const sc = item.ativo ? STATUS_CONFIG.ativo : STATUS_CONFIG.inativo;
             const valor = parseFloat(item.valor);
             return (
-              <Card key={item.id} sx={{ border: `1px solid ${tc.border}`, borderLeft: `4px solid ${tc.color}`, bgcolor: tc.bg, opacity: item.ativo ? 1 : 0.6 }}>
+              <Card key={item.id} sx={{ border: `1px solid ${isDark ? tc.darkBorder : tc.border}`, borderLeft: `4px solid ${tc.color}`, bgcolor: isDark ? tc.darkBg : tc.bg, opacity: item.ativo ? 1 : 0.6 }}>
                 <CardContent sx={{ p: 2, "&:last-child": { pb: 2 }, display: "flex", flexDirection: "column", gap: 1.5 }}>
                   <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <Chip label={sc.label} size="small" sx={{ bgcolor: sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20 }} />
+                    <Chip label={sc.label} size="small" sx={{ bgcolor: isDark ? sc.darkBg : sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20 }} />
                     <IconButton size="small" onClick={(e) => { setMenuAnchor(e.currentTarget); setMenuItemId(item.id); }}>
                       <MoreVertRoundedIcon fontSize="small" />
                     </IconButton>
@@ -225,7 +226,7 @@ export default function EntradasPage() {
                     </Typography>
                     <Typography variant="caption" color="text.secondary">/mês</Typography>
                   </Box>
-                  <Box sx={{ height: "1px", bgcolor: tc.border }} />
+                  <Box sx={{ height: "1px", bgcolor: isDark ? tc.darkBorder : tc.border }} />
                   <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.5 }}>
                     <Box>
                       <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Anual</Typography>
@@ -256,7 +257,7 @@ export default function EntradasPage() {
             const sc = item.ativo ? STATUS_CONFIG.ativo : STATUS_CONFIG.inativo;
             const isExpanded = expandedId === item.id;
             return (
-              <Card key={item.id} sx={{ border: `1px solid ${tc.border}`, borderLeft: `4px solid ${tc.color}`, bgcolor: tc.bg, opacity: item.ativo ? 1 : 0.6, overflow: "hidden" }}>
+              <Card key={item.id} sx={{ border: `1px solid ${isDark ? tc.darkBorder : tc.border}`, borderLeft: `4px solid ${tc.color}`, bgcolor: isDark ? tc.darkBg : tc.bg, opacity: item.ativo ? 1 : 0.6, overflow: "hidden" }}>
                 <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
                   <Box
                     onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -266,7 +267,7 @@ export default function EntradasPage() {
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
                         <Typography variant="body1" sx={{ fontWeight: 700 }} noWrap>{item.nome}</Typography>
                         <Chip label={tc.label} size="small" sx={{ bgcolor: `${tc.color}20`, color: tc.color, fontWeight: 700, fontSize: "0.65rem", height: 20, flexShrink: 0 }} />
-                        <Chip label={sc.label} size="small" sx={{ bgcolor: sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20, flexShrink: 0 }} />
+                        <Chip label={sc.label} size="small" sx={{ bgcolor: isDark ? sc.darkBg : sc.bg, color: sc.color, fontWeight: 700, fontSize: "0.65rem", height: 20, flexShrink: 0 }} />
                       </Box>
                     </Box>
                     <Typography sx={{ fontWeight: 800, fontFamily: "monospace", fontSize: "1.1rem", color: tc.color, flexShrink: 0 }}>
@@ -278,7 +279,7 @@ export default function EntradasPage() {
                     </IconButton>
                   </Box>
                   <Collapse in={isExpanded}>
-                    <Box sx={{ px: 2, pt: 1, pb: 1.5, borderTop: `1px solid ${tc.border}` }}>
+                    <Box sx={{ px: 2, pt: 1, pb: 1.5, borderTop: `1px solid ${isDark ? tc.darkBorder : tc.border}` }}>
                       {item.notas ? (
                         <Box sx={{ display: "flex", gap: 0.75, alignItems: "flex-start" }}>
                           <NotesRoundedIcon sx={{ fontSize: 13, color: "text.disabled", mt: "2px" }} />
