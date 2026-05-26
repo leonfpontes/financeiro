@@ -22,6 +22,11 @@ model User {
   configUsuario   ConfigUsuario?
   realizadoMensal RealizadoMensal[]
   snapshotMensal  SnapshotMensal[]
+  cartoes         CartaoCredito[]
+  faturaPagamentos FaturaPagamento[]
+  assinaturas     Assinatura[]
+  parcelamentos   Parcelamento[]
+  gastosAvulsos   GastoAvulsoCartao[]
 
   @@map("users")
 }
@@ -154,6 +159,7 @@ model SnapshotMensal {
   gastosSazonais  Decimal  @db.Decimal(12, 2)
   margem          Decimal  @db.Decimal(12, 2)
   margemPercent   Decimal  @db.Decimal(5, 2)
+  gastosCartoes   Decimal  @db.Decimal(12, 2) @default(0)
   userId          String
   createdAt       DateTime @default(now())
 
@@ -162,4 +168,106 @@ model SnapshotMensal {
   @@unique([userId, mesAno])
   @@index([userId])
   @@map("snapshot_mensal")
+}
+
+// ─── Cartão de Crédito ────────────────────────────────────────────────────────
+
+model CartaoCredito {
+  id            String   @id @default(cuid())
+  nome          String   @db.VarChar(100)
+  limite        Decimal  @db.Decimal(12, 2)
+  diaVencimento Int
+  cor           String?  @db.VarChar(20)
+  ativo         Boolean  @default(true)
+  userId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assinaturas   Assinatura[]
+  parcelamentos Parcelamento[]
+  gastosAvulsos GastoAvulsoCartao[]
+  pagamentos    FaturaPagamento[]
+
+  @@index([userId])
+  @@map("cartoes_credito")
+}
+
+model Assinatura {
+  id         String   @id @default(cuid())
+  nome       String   @db.VarChar(100)
+  valor      Decimal  @db.Decimal(12, 2)
+  dataInicio String   @db.VarChar(7)
+  dataFim    String?  @db.VarChar(7)
+  icone      String?  @db.VarChar(50)
+  notas      String?  @db.VarChar(500)
+  cartaoId   String
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  cartao CartaoCredito @relation(fields: [cartaoId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([cartaoId])
+  @@index([userId])
+  @@map("assinaturas")
+}
+
+model Parcelamento {
+  id             String   @id @default(cuid())
+  nome           String   @db.VarChar(100)
+  valorTotal     Decimal  @db.Decimal(12, 2)
+  numeroParcelas Int
+  mesInicio      String   @db.VarChar(7)
+  icone          String?  @db.VarChar(50)
+  notas          String?  @db.VarChar(500)
+  cartaoId       String
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  cartao CartaoCredito @relation(fields: [cartaoId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([cartaoId])
+  @@index([userId])
+  @@map("parcelamentos")
+}
+
+model GastoAvulsoCartao {
+  id       String   @id @default(cuid())
+  nome     String   @db.VarChar(100)
+  valor    Decimal  @db.Decimal(12, 2)
+  mesAno   String   @db.VarChar(7)
+  icone    String?  @db.VarChar(50)
+  notas    String?  @db.VarChar(500)
+  cartaoId String
+  userId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cartao CartaoCredito @relation(fields: [cartaoId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("gastos_avulsos_cartao")
+}
+
+model FaturaPagamento {
+  id            String    @id @default(cuid())
+  cartaoId      String
+  userId        String
+  mesAno        String    @db.VarChar(7)
+  pago          Boolean   @default(false)
+  dataPagamento DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  cartao CartaoCredito @relation(fields: [cartaoId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cartaoId, mesAno])
+  @@index([userId])
+  @@map("faturas_pagamento")
 }

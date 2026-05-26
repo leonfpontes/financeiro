@@ -16,7 +16,15 @@ const PAGE_TITLES: Record<string, string> = {
   "/entradas": "Entradas",
   "/gastos": "Gastos",
   "/compromissos": "Compromissos",
+  "/evolucao": "Evolução",
+  "/cartoes": "Cartões",
 };
+
+function getTitle(pathname: string): string {
+  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
+  if (pathname.startsWith("/cartoes/")) return "Detalhe do Cartão";
+  return "Financeiro";
+}
 
 export function TopBar() {
   const pathname = usePathname();
@@ -28,7 +36,7 @@ export function TopBar() {
     .slice(0, 2)
     .join("")
     .toUpperCase();
-  const title = PAGE_TITLES[pathname] ?? "Financeiro";
+  const title = getTitle(pathname);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (

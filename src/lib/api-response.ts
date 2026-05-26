@@ -5,7 +5,7 @@ export interface ApiError {
 }
 
 export function ok<T>(data: T) {
-  return { data };
+  return { success: true, data };
 }
 
 export function fail(

@@ -2,11 +2,11 @@ import { PrismaClient } from "@/generated/prisma";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 function createPrismaClient() {
+  const url = process.env.DATABASE_URL!;
+  const needsSsl = process.env.NODE_ENV === "production" || !url.includes("localhost");
   const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL!,
-    ...(process.env.NODE_ENV === "production" && {
-      ssl: { rejectUnauthorized: false },
-    }),
+    connectionString: url,
+    ...(needsSsl && { ssl: { rejectUnauthorized: false } }),
   });
   return new PrismaClient({
     adapter,

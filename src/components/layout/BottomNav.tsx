@@ -9,19 +9,20 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
 import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
+import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 
 const NAV = [
   { href: "/", label: "Fotografia", icon: PhotoCameraRoundedIcon },
   { href: "/entradas", label: "Entradas", icon: TrendingUpRoundedIcon },
   { href: "/gastos", label: "Gastos", icon: ReceiptLongRoundedIcon },
   { href: "/compromissos", label: "Compromissos", icon: AccountBalanceRoundedIcon },
-  { href: "/evolucao", label: "Evolução", icon: ShowChartRoundedIcon },
+  { href: "/cartoes", label: "Cartões", icon: CreditCardRoundedIcon },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const value = NAV.findIndex((n) => n.href === pathname);
+  const value = NAV.findIndex((n) => n.href === "/" ? pathname === "/" : pathname.startsWith(n.href));
 
   return (
     <Paper

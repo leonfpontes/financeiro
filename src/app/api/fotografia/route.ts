@@ -4,10 +4,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ok, fail } from "@/lib/api-response";
 import { GastoTipo, PeriodoInput } from "@/generated/prisma";
+import { FaturaService } from "@/services/fatura.service";
 
 export const dynamic = "force-dynamic";
 
 const SEMANAS_MES = 52 / 12; // ~4.333
+const faturaSvc = new FaturaService();
 
 function gastoMensalCalculado(valor: number, tipo: GastoTipo, periodoInput: PeriodoInput | null, mesesOcorrencia: number[], mesAtualNumero: number): number {
   if (tipo === GastoTipo.FIXO) return valor;
@@ -41,7 +43,7 @@ export async function GET(req: Request) {
   const firstDay = new Date(Date.UTC(year, month - 1, 1));
   const lastDay  = new Date(Date.UTC(year, month, 0));
 
-  const [entradas, gastos, compromissos, config, realizados, snapshotExistente] = await Promise.all([
+  const [entradas, gastos, compromissos, config, realizados, snapshotExistente, cartoesResumo] = await Promise.all([
     prisma.entrada.findMany({ where: { userId, ativo: true }, orderBy: { createdAt: "asc" } }),
     prisma.gasto.findMany({
       where: {
@@ -56,6 +58,7 @@ export async function GET(req: Request) {
     prisma.configUsuario.findUnique({ where: { userId } }),
     prisma.realizadoMensal.findMany({ where: { userId, mesAno } }),
     prisma.snapshotMensal.findUnique({ where: { userId_mesAno: { userId, mesAno } } }),
+    faturaSvc.getFaturaResumoTodosCartoes(userId, mesAno),
   ]);
 
   const margemPercent = config ? Number(config.margemPercent) : 15;
@@ -87,6 +90,8 @@ export async function GET(req: Request) {
   const totalSazonaisMensal = totalSazonaisAnual / 12;
   const sazonaisAlertaMes = sazonais.filter(g => g.mesesOcorrencia.includes(mesNumero));
 
+  const totalCartoes = cartoesResumo.reduce((s, c) => s + c.total, 0);
+
   // Margem
   const margemValorLive = (margemPercent / 100) * totalEntradas;
 
@@ -108,6 +113,7 @@ export async function GET(req: Request) {
         gastosSazonais: totalSazonaisMensal,
         margem: margemValorLive,
         margemPercent,
+        gastosCartoes: totalCartoes,
       },
     });
   }
@@ -120,9 +126,10 @@ export async function GET(req: Request) {
   const pGastosSazonais  = snap ? Number(snap.gastosSazonais)  : totalSazonaisMensal;
   const pMargem          = snap ? Number(snap.margem)          : margemValorLive;
   const pMargemPercent   = snap ? Number(snap.margemPercent)   : margemPercent;
+  const pGastosCartoes   = snap ? Number(snap.gastosCartoes)   : totalCartoes;
 
   // Disponível
-  const disponivel = pEntradas - pCompromissos - pGastosFixos - pGastosVariaveis - pGastosSazonais - pMargem;
+  const disponivel = pEntradas - pCompromissos - pGastosFixos - pGastosVariaveis - pGastosSazonais - pMargem - pGastosCartoes;
 
   // Percentual comprometido
   const comprometidoPercent = pEntradas > 0 ? ((pEntradas - disponivel) / pEntradas) * 100 : 0;
@@ -150,5 +157,10 @@ export async function GET(req: Request) {
     realizado: realizadoMap,
     hasData,
     isSnapshot: !!snap,
+    cartoes: {
+      total: pGastosCartoes,
+      teto: tetoCreditCard,
+      items: cartoesResumo,
+    },
   }));
 }

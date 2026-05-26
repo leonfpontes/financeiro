@@ -32,3 +32,17 @@ export function formatDate(date: Date | string): string {
 export function currentYearMonth(): number {
   return toYearMonth(new Date());
 }
+
+const MESES_CURTOS = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+
+/** "2026-05" → "Mai/2026" */
+export function formatMesAno(mesAno: string): string {
+  const [y, m] = mesAno.split("-");
+  return `${MESES_CURTOS[Number(m) - 1]}/${y}`;
+}
+
+/** "2026-05" → "Mai/26" */
+export function formatMesCurto(mesAno: string): string {
+  const [y, m] = mesAno.split("-");
+  return `${MESES_CURTOS[Number(m) - 1]}/${y.slice(2)}`;
+}

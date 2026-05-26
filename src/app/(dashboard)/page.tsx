@@ -52,6 +52,11 @@ interface FotografiaData {
   comprometidoPercent: number;
   realizado: Record<string, number | null>;
   hasData: boolean;
+  cartoes?: {
+    total: number;
+    teto: number | null;
+    items: Array<{ cartaoId: string; nome: string; cor: string | null; limite: number; total: number }>;
+  };
 }
 
 function toMesAno(date: Date) {
@@ -236,9 +241,9 @@ export default function FotografiaPage() {
           ?? Este mês você tem gasto(s) sazonal(is): <strong>{gastos.sazonais.alertaMes.map((g: ItemSazonal) => g.nome).join(", ")}</strong>
         </Alert>
       )}
-      {config.tetoCreditCard != null && gastos.variaveis.totalMensal > config.tetoCreditCard && (
+      {config.tetoCreditCard != null && data?.cartoes != null && data.cartoes.total > config.tetoCreditCard && (
         <Alert severity="error" sx={{ borderRadius: 2 }}>
-          ?? Gastos variáveis ({formatBRL(gastos.variaveis.totalMensal)}) acima do teto do cartão ({formatBRL(config.tetoCreditCard)})
+          Fatura dos cartões ({formatBRL(data.cartoes.total)}) acima do teto configurado ({formatBRL(config.tetoCreditCard)})
         </Alert>
       )}
 
@@ -329,12 +334,15 @@ export default function FotografiaPage() {
           <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: "#475569" }}>Fórmula do Mês</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
             {[
-              { label: "+ Entradas",            valor: entradas.totalPlanejado,          color: "success.main" },
-              { label: "- Compromissos",         valor: compromissos.totalMensal,         color: "text.secondary" },
-              { label: "- Gastos Fixos",         valor: gastos.fixos.total,               color: "text.secondary" },
-              { label: "- Gastos Variáveis",     valor: gastos.variaveis.totalMensal,     color: "text.secondary" },
-              { label: "- Gastos Sazonais (avg)",valor: gastos.sazonais.totalMensal,      color: "text.secondary" },
-              { label: `- Margem (${margem.percent}%)`,valor: margem.valor,               color: "text.secondary" },
+              { label: "+ Entradas",             valor: entradas.totalPlanejado,          color: "success.main" },
+              { label: "- Compromissos",          valor: compromissos.totalMensal,         color: "text.secondary" },
+              { label: "- Gastos Fixos",          valor: gastos.fixos.total,               color: "text.secondary" },
+              { label: "- Gastos Variáveis",      valor: gastos.variaveis.totalMensal,     color: "text.secondary" },
+              { label: "- Gastos Sazonais (avg)", valor: gastos.sazonais.totalMensal,      color: "text.secondary" },
+              { label: `- Margem (${margem.percent}%)`, valor: margem.valor,               color: "text.secondary" },
+              ...(data?.cartoes && data.cartoes.total > 0
+                ? [{ label: "- Cartões de Crédito", valor: data.cartoes.total, color: "text.secondary" }]
+                : []),
             ].map(({ label, valor: v, color }) => (
               <Box key={label} sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography variant="body2" color={color}>{label}</Typography>
@@ -349,6 +357,54 @@ export default function FotografiaPage() {
           </Box>
         </CardContent>
       </Card>
+
+      {/* Cartões de Crédito */}
+      {data?.cartoes && data.cartoes.items.length > 0 && (() => {
+        const { total: totalCart, teto, items } = data.cartoes!;
+        const pctTeto = teto && teto > 0 ? Math.min((totalCart / teto) * 100, 100) : null;
+        const tetoColor = pctTeto == null ? "#94a3b8" : pctTeto >= 90 ? "#ef4444" : pctTeto >= 70 ? "#f59e0b" : "#22c55e";
+        return (
+          <Card sx={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Cartões de Crédito</Typography>
+                <Link href="/cartoes" style={{ textDecoration: "none" }}>
+                  <Typography variant="caption" sx={{ color: "primary.light", cursor: "pointer" }}>Ver todos →</Typography>
+                </Link>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}>
+                <Typography sx={{ fontWeight: 800, fontSize: "1.3rem", color: tetoColor }}>{formatBRL(totalCart)}</Typography>
+                {teto && <Typography variant="caption" color="text.secondary">teto: {formatBRL(teto)}</Typography>}
+              </Box>
+              {pctTeto != null && (
+                <Box sx={{ mb: 2, height: 6, borderRadius: 3, bgcolor: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+                  <Box sx={{ height: "100%", width: `${pctTeto}%`, bgcolor: tetoColor, borderRadius: 3 }} />
+                </Box>
+              )}
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+                {items.map((c) => {
+                  const pct = c.limite > 0 ? Math.min((c.total / c.limite) * 100, 100) : 0;
+                  const cc = pct >= 90 ? "#ef4444" : pct >= 70 ? "#f59e0b" : (c.cor ?? "#64748b");
+                  return (
+                    <Box key={c.cartaoId}>
+                      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.4 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                          <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: c.cor ?? "#64748b", flexShrink: 0 }} />
+                          <Typography variant="caption">{c.nome}</Typography>
+                        </Box>
+                        <Typography variant="caption" sx={{ fontFamily: "monospace", color: cc }}>{formatBRL(c.total)}</Typography>
+                      </Box>
+                      <Box sx={{ height: 3, borderRadius: 1.5, bgcolor: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                        <Box sx={{ height: "100%", width: `${pct}%`, bgcolor: cc, borderRadius: 1.5 }} />
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Plano de Ação */}
       <Card sx={{ border: "1px solid #e2e8f0" }}>

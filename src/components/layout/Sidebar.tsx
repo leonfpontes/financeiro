@@ -17,7 +17,9 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
 import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
+import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import { Logo } from "./Logo";
 
 const DRAWER_WIDTH = 260;
 
@@ -27,6 +29,7 @@ const nav = [
   { href: "/gastos",      label: "Gastos",        icon: ReceiptLongRoundedIcon },
   { href: "/compromissos", label: "Compromissos", icon: AccountBalanceRoundedIcon },
   { href: "/evolucao",    label: "Evolução",      icon: ShowChartRoundedIcon },
+  { href: "/cartoes",     label: "Cartões",       icon: CreditCardRoundedIcon },
 ];
 
 export function Sidebar() {
@@ -53,16 +56,8 @@ export function Sidebar() {
     >
       {/* Logo */}
       <Box sx={{ px: 2.5, pt: 3, pb: 3, display: "flex", alignItems: "center", gap: 1.5 }}>
-        <Box
-          sx={{
-            width: 36, height: 36, borderRadius: 2,
-            background: "linear-gradient(135deg, #6366f1, #4f46e5)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 18, fontWeight: 700, color: "white", flexShrink: 0,
-            boxShadow: "0 4px 12px rgba(99,102,241,0.4)",
-          }}
-        >
-          ₢
+        <Box sx={{ flexShrink: 0, filter: "drop-shadow(0 4px 12px rgba(99,102,241,0.45))" }}>
+          <Logo size={36} />
         </Box>
         <Typography sx={{ fontWeight: 700, fontSize: "1rem", color: "white", letterSpacing: "-0.02em" }}>
           Financeiro
@@ -72,7 +67,7 @@ export function Sidebar() {
       {/* Nav */}
       <List sx={{ px: 1.5, flex: 1 }} disablePadding>
         {nav.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href;
+          const active = href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
           return (
             <ListItemButton
               key={href}
