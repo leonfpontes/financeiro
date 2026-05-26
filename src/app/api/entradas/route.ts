@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const parsed = createEntradaSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten()), { status: 400 });
+  if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
 
   const data = await svc.create(userId, parsed.data);
   return NextResponse.json(ok(data), { status: 201 });

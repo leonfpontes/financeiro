@@ -25,7 +25,7 @@ export async function PATCH(req: Request) {
 
   const body = await req.json();
   const parsed = updateConfigSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten()), { status: 400 });
+  if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
 
   const data = await svc.updateConfig(userId, parsed.data);
   return NextResponse.json(ok(data));
