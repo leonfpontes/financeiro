@@ -20,6 +20,7 @@ import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 
 const DRAWER_WIDTH = 260;
 
@@ -103,6 +104,13 @@ export function Sidebar() {
       {/* Footer */}
       <Divider sx={{ borderColor: "rgba(255,255,255,0.08)", mx: 2 }} />
       <Box sx={{ p: 2 }}>
+        {/* Toggle dark/light mode */}
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 1.5, py: 0.75, mb: 0.5 }}>
+          <Typography variant="caption" sx={{ color: "rgba(148,163,184,0.7)", fontSize: "0.72rem", letterSpacing: "0.04em" }}>
+            APARÊNCIA
+          </Typography>
+          <ThemeToggle />
+        </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1, mb: 0.5 }}>
           <Avatar
             sx={{

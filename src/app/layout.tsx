@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import { MuiProvider } from "@/components/providers/MuiProvider";
+import { ThemeModeProvider } from "@/components/providers/ThemeContext";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -18,11 +19,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={jakarta.variable}>
+    // suppressHydrationWarning: a classe `dark` é aplicada via JS após hidratação
+    <html lang="pt-BR" className={jakarta.variable} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <AppRouterCacheProvider>
-          <MuiProvider>{children}</MuiProvider>
-        </AppRouterCacheProvider>
+        <ThemeModeProvider>
+          <AppRouterCacheProvider>
+            <MuiProvider>{children}</MuiProvider>
+          </AppRouterCacheProvider>
+        </ThemeModeProvider>
       </body>
     </html>
   );

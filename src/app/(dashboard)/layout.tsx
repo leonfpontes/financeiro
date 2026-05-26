@@ -13,7 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <SessionProvider session={session}>
-      <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f8fafc" }}>
+      <Box sx={{ display: "flex", minHeight: "100vh" }}>
         <TopBar />
         <Sidebar />
         <Box component="main" sx={{ flex: 1, overflow: "auto", minWidth: 0 }}>

@@ -83,37 +83,59 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  /* ── Fundos ─────────────────────────────────────────────────────────────── */
+  --background: oklch(0.10 0.025 264);        /* navy profundo #0d0d1f */
+  --foreground: oklch(0.95 0.005 264);        /* quase branco acinzentado */
+  --card: oklch(0.15 0.03 264);               /* charcoal azulado #161628 */
+  --card-foreground: oklch(0.95 0.005 264);
+  --popover: oklch(0.15 0.03 264);
+  --popover-foreground: oklch(0.95 0.005 264);
+
+  /* ── Primary (índigo neon) ───────────────────────────────────────────────── */
+  --primary: oklch(0.67 0.19 264.1);          /* #818cf8 brilhante */
+  --primary-foreground: oklch(0.985 0 0);
+
+  /* ── Secondary / Muted ──────────────────────────────────────────────────── */
+  --secondary: oklch(0.20 0.03 264);
+  --secondary-foreground: oklch(0.95 0.005 264);
+  --muted: oklch(0.18 0.025 264);
+  --muted-foreground: oklch(0.60 0.01 264);
+  --accent: oklch(0.20 0.04 264);
+  --accent-foreground: oklch(0.95 0.005 264);
+
+  /* ── Status ─────────────────────────────────────────────────────────────── */
+  --destructive: oklch(0.71 0.19 12);         /* #fb7185 neon rosa */
+
+  /* ── Bordas e inputs ────────────────────────────────────────────────────── */
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.67 0.19 264.1);
+
+  /* ── Chart colors vibrantes (neons) ─────────────────────────────────────── */
+  --chart-1: oklch(0.67 0.19 264.1);         /* índigo neon */
+  --chart-2: oklch(0.77 0.18 162);           /* esmeralda #34d399 */
+  --chart-3: oklch(0.71 0.19 12);            /* rosa #fb7185 */
+  --chart-4: oklch(0.82 0.17 83);            /* âmbar #fbbf24 */
+  --chart-5: oklch(0.80 0.14 214);           /* ciano #22d3ee */
+
+  /* ── Sidebar (herda do nav que já é escuro) ──────────────────────────────── */
+  --sidebar: oklch(0.12 0.03 264);
+  --sidebar-foreground: oklch(0.88 0.01 264);
+  --sidebar-primary: oklch(0.67 0.19 264.1);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-accent: oklch(0.18 0.03 264);
+  --sidebar-accent-foreground: oklch(0.95 0.005 264);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.67 0.19 264.1);
+
+  /* ── Variáveis de glow para neons ─────────────────────────────────────────
+     Uso: box-shadow: 0 0 12px var(--neon-primary)
+  ── */
+  --neon-primary: rgba(129, 140, 248, 0.45);
+  --neon-success: rgba(52, 211, 153, 0.40);
+  --neon-error:   rgba(251, 113, 133, 0.40);
+  --neon-warning: rgba(251, 191, 36,  0.40);
+  --neon-cyan:    rgba(34,  211, 238, 0.40);
 }
 
 @layer base {

@@ -10,6 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { ThemeToggle } from "./ThemeToggle";
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "Fotografia",
@@ -74,20 +75,23 @@ export function TopBar() {
           </Typography>
         </Box>
 
-        <Avatar
-          sx={{
-            width: 32,
-            height: 32,
-            fontSize: "0.7rem",
-            fontWeight: 700,
-            bgcolor: "rgba(99,102,241,0.4)",
-            color: "#a5b4fc",
-            cursor: "pointer",
-          }}
-          onClick={(e) => setAnchorEl(e.currentTarget)}
-        >
-          {initials}
-        </Avatar>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <ThemeToggle />
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              fontSize: "0.7rem",
+              fontWeight: 700,
+              bgcolor: "rgba(99,102,241,0.4)",
+              color: "#a5b4fc",
+              cursor: "pointer",
+            }}
+            onClick={(e) => setAnchorEl(e.currentTarget)}
+          >
+            {initials}
+          </Avatar>
+        </Box>
 
         <Menu
           anchorEl={anchorEl}
