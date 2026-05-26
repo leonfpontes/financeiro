@@ -1,9 +1,13 @@
 import { Assinatura } from "@/generated/prisma";
 import { AssinaturaRepository } from "@/repositories/assinatura.repository";
+import { CartaoCreditoRepository } from "@/repositories/cartao-credito.repository";
 import { CreateAssinaturaInput, UpdateAssinaturaInput } from "@/lib/validations/cartao.schema";
 
 export class AssinaturaService {
-  constructor(private readonly repo = new AssinaturaRepository()) {}
+  constructor(
+    private readonly repo = new AssinaturaRepository(),
+    private readonly cartaoRepo = new CartaoCreditoRepository(),
+  ) {}
 
   async getByCartao(cartaoId: string, userId: string): Promise<Assinatura[]> {
     return this.repo.findByCartao(cartaoId, userId);
@@ -16,6 +20,9 @@ export class AssinaturaService {
   }
 
   async create(userId: string, cartaoId: string, data: CreateAssinaturaInput): Promise<Assinatura> {
+    const cartao = await this.cartaoRepo.findById(cartaoId, userId);
+    if (!cartao) throw new Error("NOT_FOUND");
+
     return this.repo.create(userId, cartaoId, data);
   }
 

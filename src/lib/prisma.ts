@@ -6,7 +6,11 @@ function createPrismaClient() {
   const needsSsl = process.env.NODE_ENV === "production" || !url.includes("localhost");
   const adapter = new PrismaPg({
     connectionString: url,
-    ...(needsSsl && { ssl: { rejectUnauthorized: false } }),
+    ...(needsSsl && {
+      ssl: {
+        rejectUnauthorized: process.env.NODE_ENV === "production",
+      },
+    }),
   });
   return new PrismaClient({
     adapter,

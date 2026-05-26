@@ -6,6 +6,7 @@ import { ok, fail } from "@/lib/api-response";
 
 export const dynamic = "force-dynamic";
 const svc = new FaturaService();
+const mesAnoRegex = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 function currentMesAno(): string {
   const now = new Date();
@@ -19,23 +20,30 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const mesAno = req.nextUrl.searchParams.get("mesAno") ?? currentMesAno();
+  if (!mesAnoRegex.test(mesAno)) {
+    return NextResponse.json(fail("VALIDATION", "mesAno inválido", 400), { status: 400 });
+  }
 
-  const [fatura, historico] = await Promise.all([
-    svc.getFaturaDoMes(userId, id, mesAno),
-    svc.getHistoricoFatura(userId, id, 6),
-  ]);
+  try {
+    const [fatura, historico] = await Promise.all([
+      svc.getFaturaDoMes(userId, id, mesAno),
+      svc.getHistoricoFatura(userId, id, 6),
+    ]);
 
-  const regressao = svc.calcularRegressao(historico, 3);
+    const regressao = svc.calcularRegressao(historico, 3);
 
-  return NextResponse.json(ok({
-    mesAno,
-    fatura: {
-      ...fatura,
-      assinaturas: fatura.assinaturas.map((a) => ({ ...a, valor: Number(a.valor) })),
-      parcelamentos: fatura.parcelamentos.map((p) => ({ ...p, valorTotal: Number(p.valorTotal) })),
-      avulsos: fatura.avulsos.map((a) => ({ ...a, valor: Number(a.valor) })),
-    },
-    historico,
-    regressao,
-  }));
+    return NextResponse.json(ok({
+      mesAno,
+      fatura: {
+        ...fatura,
+        assinaturas: fatura.assinaturas.map((a) => ({ ...a, valor: Number(a.valor) })),
+        parcelamentos: fatura.parcelamentos.map((p) => ({ ...p, valorTotal: Number(p.valorTotal) })),
+        avulsos: fatura.avulsos.map((a) => ({ ...a, valor: Number(a.valor) })),
+      },
+      historico,
+      regressao,
+    }));
+  } catch {
+    return NextResponse.json(fail("NOT_FOUND", "Cartão não encontrado", 404), { status: 404 });
+  }
 }

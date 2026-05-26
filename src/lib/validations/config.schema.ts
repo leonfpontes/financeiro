@@ -8,7 +8,13 @@ export const updateConfigSchema = z.object({
 });
 
 export const upsertRealizadoSchema = z.object({
-  mesAno: z.string().regex(/^\d{4}-\d{2}$/),
+  mesAno: z
+    .string()
+    .regex(/^\d{4}-\d{2}$/, "Formato inválido (YYYY-MM)")
+    .refine((value) => {
+      const month = Number(value.slice(5, 7));
+      return month >= 1 && month <= 12;
+    }, "Mês inválido (use 01 a 12)"),
   grupo: z.nativeEnum(GrupoRealizado),
   valorRealizado: z.coerce.number().min(0),
 });

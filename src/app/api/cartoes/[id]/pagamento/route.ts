@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id: cartaoId } = await params;
   const mesAno = req.nextUrl.searchParams.get("mesAno");
-  if (!mesAno || !/^\d{4}-\d{2}$/.test(mesAno))
+  if (!mesAno || !/^\d{4}-(0[1-9]|1[0-2])$/.test(mesAno))
     return NextResponse.json(fail("VALIDATION", "mesAno inválido", 400), { status: 400 });
 
   const cartao = await prisma.cartaoCredito.findFirst({ where: { id: cartaoId, userId } });
@@ -36,9 +36,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id: cartaoId } = await params;
 
-  const body = await req.json() as { mesAno: string; pago: boolean; dataPagamento: string | null };
+  let body: { mesAno: string; pago: boolean; dataPagamento: string | null };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(fail("VALIDATION", "Payload JSON inválido", 400), { status: 400 });
+  }
+
   const { mesAno, pago, dataPagamento } = body;
-  if (!mesAno || typeof pago !== "boolean")
+  if (!mesAno || !/^\d{4}-(0[1-9]|1[0-2])$/.test(mesAno) || typeof pago !== "boolean")
     return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400), { status: 400 });
 
   const cartao = await prisma.cartaoCredito.findFirst({ where: { id: cartaoId, userId } });

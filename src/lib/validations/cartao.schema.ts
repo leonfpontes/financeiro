@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-const mesAnoString = z.string().regex(/^\d{4}-\d{2}$/, "Formato inválido (YYYY-MM)");
+const mesAnoString = z
+  .string()
+  .regex(/^\d{4}-\d{2}$/, "Formato inválido (YYYY-MM)")
+  .refine((value) => {
+    const month = Number(value.slice(5, 7));
+    return month >= 1 && month <= 12;
+  }, "Mês inválido (use 01 a 12)");
 
 export const createCartaoSchema = z.object({
   nome: z.string().min(1).max(100),

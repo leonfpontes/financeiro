@@ -19,9 +19,9 @@ export class ParcelamentoRepository {
   }
 
   /** Returns parcelamentos ativos em dado mês: mesInicio <= mesAno <= mesInicio + (numeroParcelas - 1) months */
-  async findActiveInMonth(cartaoId: string, mesAno: string): Promise<Parcelamento[]> {
+  async findActiveInMonth(cartaoId: string, userId: string, mesAno: string): Promise<Parcelamento[]> {
     const all = await prisma.parcelamento.findMany({
-      where: { cartaoId, mesInicio: { lte: mesAno } },
+      where: { cartaoId, userId, mesInicio: { lte: mesAno } },
     });
     return all.filter((p) => {
       const mesFim = addMonths(p.mesInicio, p.numeroParcelas - 1);

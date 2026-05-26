@@ -5,10 +5,24 @@ import { ok, fail } from "@/lib/api-response";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations/auth.schema";
 import bcrypt from "bcryptjs";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    // Rate-limit por IP — máx. 5 registros / 15 min
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      req.headers.get("x-real-ip") ??
+      "unknown";
+    const { allowed } = checkRateLimit(`register:${ip}`, 5, 15 * 60 * 1000);
+    if (!allowed) {
+      return NextResponse.json(fail("RATE_LIMIT", "Muitas tentativas. Tente novamente em 15 minutos.", 429), { status: 429 });
+    }
+
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json(fail("VALIDATION_ERROR", "Payload JSON inválido", 400), { status: 400 });
+    }
     const parsed = registerSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(fail("VALIDATION_ERROR", "Dados inválidos", 422, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 422 });

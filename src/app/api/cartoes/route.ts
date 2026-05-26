@@ -35,7 +35,7 @@ export async function GET() {
     return NextResponse.json(ok(data));
   } catch (err) {
     console.error("[GET /api/cartoes]", err);
-    const msg = process.env.NODE_ENV === "development" && err instanceof Error ? err.message : "Erro interno";
+    const msg = "Erro interno";
     return NextResponse.json(fail("INTERNAL", msg, 500), { status: 500 });
   }
 }
@@ -45,7 +45,12 @@ export async function POST(req: Request) {
   const userId = (session?.user as { id?: string })?.id;
   if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
 
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(fail("VALIDATION", "Payload JSON inválido", 400), { status: 400 });
+  }
   const parsed = createCartaoSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
 

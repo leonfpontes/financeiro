@@ -13,12 +13,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const userId = (session?.user as { id?: string })?.id;
   if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
 
-  const { avulsoId } = await params;
+  const { id, avulsoId } = await params;
   const body = await req.json();
   const parsed = updateGastoAvulsoSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
 
   try {
+    const existing = await svc.getById(avulsoId, userId);
+    if (existing.cartaoId !== id) {
+      return NextResponse.json(fail("NOT_FOUND", "Lançamento não encontrado", 404), { status: 404 });
+    }
+
     const data = await svc.update(avulsoId, userId, parsed.data);
     return NextResponse.json(ok({ ...data, valor: Number(data.valor) }));
   } catch {
@@ -31,8 +36,13 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const userId = (session?.user as { id?: string })?.id;
   if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
 
-  const { avulsoId } = await params;
+  const { id, avulsoId } = await params;
   try {
+    const existing = await svc.getById(avulsoId, userId);
+    if (existing.cartaoId !== id) {
+      return NextResponse.json(fail("NOT_FOUND", "Lançamento não encontrado", 404), { status: 404 });
+    }
+
     await svc.delete(avulsoId, userId);
     return NextResponse.json(ok({ deleted: true }));
   } catch {

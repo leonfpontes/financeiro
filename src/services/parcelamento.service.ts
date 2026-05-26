@@ -1,5 +1,6 @@
 import { Parcelamento } from "@/generated/prisma";
 import { ParcelamentoRepository } from "@/repositories/parcelamento.repository";
+import { CartaoCreditoRepository } from "@/repositories/cartao-credito.repository";
 import { CreateParcelamentoInput, UpdateParcelamentoInput } from "@/lib/validations/cartao.schema";
 
 function addMonths(mesAno: string, n: number): string {
@@ -9,7 +10,10 @@ function addMonths(mesAno: string, n: number): string {
 }
 
 export class ParcelamentoService {
-  constructor(private readonly repo = new ParcelamentoRepository()) {}
+  constructor(
+    private readonly repo = new ParcelamentoRepository(),
+    private readonly cartaoRepo = new CartaoCreditoRepository(),
+  ) {}
 
   async getByCartao(cartaoId: string, userId: string): Promise<Parcelamento[]> {
     return this.repo.findByCartao(cartaoId, userId);
@@ -22,6 +26,9 @@ export class ParcelamentoService {
   }
 
   async create(userId: string, cartaoId: string, data: CreateParcelamentoInput): Promise<Parcelamento> {
+    const cartao = await this.cartaoRepo.findById(cartaoId, userId);
+    if (!cartao) throw new Error("NOT_FOUND");
+
     return this.repo.create(userId, cartaoId, data);
   }
 

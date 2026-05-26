@@ -24,7 +24,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
 
   const { id } = await params;
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(fail("VALIDATION", "Payload JSON inválido", 400), { status: 400 });
+  }
   const parsed = createAssinaturaSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
 

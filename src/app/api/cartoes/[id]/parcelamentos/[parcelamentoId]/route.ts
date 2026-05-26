@@ -18,12 +18,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const userId = (session?.user as { id?: string })?.id;
   if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
 
-  const { parcelamentoId } = await params;
+  const { id, parcelamentoId } = await params;
   const body = await req.json();
   const parsed = updateParcelamentoSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
 
   try {
+    const existing = await svc.getById(parcelamentoId, userId);
+    if (existing.cartaoId !== id) {
+      return NextResponse.json(fail("NOT_FOUND", "Parcelamento não encontrado", 404), { status: 404 });
+    }
+
     const data = await svc.update(parcelamentoId, userId, parsed.data);
     return NextResponse.json(ok({ ...data, valorTotal: Number(data.valorTotal), ...ParcelamentoService.calcularInfo(data, currentMesAno()) }));
   } catch {
@@ -36,8 +41,13 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const userId = (session?.user as { id?: string })?.id;
   if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
 
-  const { parcelamentoId } = await params;
+  const { id, parcelamentoId } = await params;
   try {
+    const existing = await svc.getById(parcelamentoId, userId);
+    if (existing.cartaoId !== id) {
+      return NextResponse.json(fail("NOT_FOUND", "Parcelamento não encontrado", 404), { status: 404 });
+    }
+
     await svc.delete(parcelamentoId, userId);
     return NextResponse.json(ok({ deleted: true }));
   } catch {

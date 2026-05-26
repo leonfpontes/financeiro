@@ -50,9 +50,12 @@ export class FaturaService {
   ) {}
 
   async getFaturaDoMes(userId: string, cartaoId: string, mesAno: string): Promise<FaturaDoMes> {
+    const cartao = await this.cartaoRepo.findById(cartaoId, userId);
+    if (!cartao) throw new Error("NOT_FOUND");
+
     const [assinaturas, parcelamentosRaw, avulsos] = await Promise.all([
-      this.assinaturaRepo.findActiveInMonth(cartaoId, mesAno),
-      this.parcelamentoRepo.findActiveInMonth(cartaoId, mesAno),
+      this.assinaturaRepo.findActiveInMonth(cartaoId, userId, mesAno),
+      this.parcelamentoRepo.findActiveInMonth(cartaoId, userId, mesAno),
       this.avulsoRepo.findByCartaoMes(cartaoId, userId, mesAno),
     ]);
 
@@ -84,13 +87,11 @@ export class FaturaService {
   /** Returns fatura totals for the last N CLOSED months (excludes current month) */
   async getHistoricoFatura(userId: string, cartaoId: string, meses = 6): Promise<PontoHistorico[]> {
     const hoje = currentMesAno();
-    const pontos: PontoHistorico[] = [];
-    for (let i = meses; i >= 1; i--) {
-      const mesAno = subMonths(hoje, i);
-      const fatura = await this.getFaturaDoMes(userId, cartaoId, mesAno);
-      pontos.push({ mesAno, total: fatura.total });
-    }
-    return pontos;
+    const mesAnoList = Array.from({ length: meses }, (_, i) => subMonths(hoje, meses - i));
+    const faturas = await Promise.all(
+      mesAnoList.map((mesAno) => this.getFaturaDoMes(userId, cartaoId, mesAno)),
+    );
+    return mesAnoList.map((mesAno, i) => ({ mesAno, total: faturas[i].total }));
   }
 
   calcularRegressao(pontos: PontoHistorico[], forecastMeses = 3): RegressaoResult {

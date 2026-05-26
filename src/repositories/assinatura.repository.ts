@@ -12,10 +12,11 @@ export class AssinaturaRepository {
   }
 
   /** Returns assinaturas ativas em dado mês: dataInicio <= mesAno && (dataFim == null || dataFim >= mesAno) */
-  async findActiveInMonth(cartaoId: string, mesAno: string): Promise<Assinatura[]> {
+  async findActiveInMonth(cartaoId: string, userId: string, mesAno: string): Promise<Assinatura[]> {
     return prisma.assinatura.findMany({
       where: {
         cartaoId,
+        userId,
         dataInicio: { lte: mesAno },
         OR: [{ dataFim: null }, { dataFim: { gte: mesAno } }],
       },

@@ -1,9 +1,13 @@
 import { GastoAvulsoCartao } from "@/generated/prisma";
 import { GastoAvulsoRepository } from "@/repositories/gasto-avulso.repository";
+import { CartaoCreditoRepository } from "@/repositories/cartao-credito.repository";
 import { CreateGastoAvulsoInput, UpdateGastoAvulsoInput } from "@/lib/validations/cartao.schema";
 
 export class GastoAvulsoService {
-  constructor(private readonly repo = new GastoAvulsoRepository()) {}
+  constructor(
+    private readonly repo = new GastoAvulsoRepository(),
+    private readonly cartaoRepo = new CartaoCreditoRepository(),
+  ) {}
 
   async getByCartaoMes(cartaoId: string, userId: string, mesAno: string): Promise<GastoAvulsoCartao[]> {
     return this.repo.findByCartaoMes(cartaoId, userId, mesAno);
@@ -16,6 +20,9 @@ export class GastoAvulsoService {
   }
 
   async create(userId: string, cartaoId: string, data: CreateGastoAvulsoInput): Promise<GastoAvulsoCartao> {
+    const cartao = await this.cartaoRepo.findById(cartaoId, userId);
+    if (!cartao) throw new Error("NOT_FOUND");
+
     return this.repo.create(userId, cartaoId, data);
   }
 

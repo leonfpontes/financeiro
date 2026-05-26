@@ -15,11 +15,16 @@ function d(year: number, month: number, day: number) {
 
 async function main() {
   // ── Usuário demo ──────────────────────────────────────────────────────────
-  const passwordHash = await bcrypt.hash("Mudar@123", 12);
+  const seedEmail = process.env.SEED_USER_EMAIL;
+  const seedPassword = process.env.SEED_USER_PASSWORD;
+  if (!seedEmail || !seedPassword) {
+    throw new Error("SEED_USER_EMAIL e SEED_USER_PASSWORD são obrigatórios. Defina no .env antes de rodar o seed.");
+  }
+  const passwordHash = await bcrypt.hash(seedPassword, 12);
   const user = await prisma.user.upsert({
-    where: { email: "leonfpontes@gmail.com" },
+    where: { email: seedEmail },
     update: { name: "Leonardo & Camila" },
-    create: { name: "Leonardo & Camila", email: "leonfpontes@gmail.com", passwordHash },
+    create: { name: "Leonardo & Camila", email: seedEmail, passwordHash },
   });
 
   // ── Categorias ────────────────────────────────────────────────────────────
@@ -459,7 +464,7 @@ async function main() {
   await tx(2026,5,20, "MBA Gestão — Camila parcela 1/12",   890,   "EXPENSE", "educacao",  "BANK_TRANSFER");
 
   console.log(`✅ Seed concluído! ${txCounter} transações em 6 meses.`);
-  console.log(`   Usuário: leonfpontes@gmail.com / Mudar@123`);
+  console.log(`   Usuário: ${seedEmail}`);
   console.log(`   Família: Leonardo Pontes & Camila Godinho`);
   console.log(`   Gatos: Mingau 🐱 Pudim 🐱 Pitoca 🏥 Nico 🐱`);
 }
