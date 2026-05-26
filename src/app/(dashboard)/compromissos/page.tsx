@@ -279,7 +279,7 @@ export default function CompromissosPage() {
                             </Typography>
                             <Typography variant="caption" color="text.secondary">/{VALOR_LABEL[tipoKey].split(" ")[0].toLowerCase()}</Typography>
                           </Box>
-                          <Box sx={{ height: "1px", bgcolor: cfg.border }} />
+                          <Box sx={{ height: "1px", bgcolor: isDark ? cfg.darkBorder : cfg.border }} />
                           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.5 }}>
                             <Box>
                               <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Anual</Typography>
@@ -307,7 +307,7 @@ export default function CompromissosPage() {
             );
           })}
           {items.length === 0 && (
-            <Card sx={{ border: "2px dashed #c7d2fe", bgcolor: "#eef2ff" }}>
+            <Card sx={{ border: isDark ? "2px dashed rgba(99,102,241,0.30)" : "2px dashed #c7d2fe", bgcolor: isDark ? "background.paper" : "#eef2ff" }}>
               <CardContent sx={{ p: 4, textAlign: "center" }}>
                 <Typography color="text.secondary">Nenhum compromisso cadastrado.</Typography>
                 <Button variant="outlined" onClick={() => openNew()} sx={{ mt: 2 }}>Cadastrar</Button>
@@ -334,7 +334,7 @@ export default function CompromissosPage() {
                   group.map((item) => {
                     const isExpanded = expandedId === item.id;
                     return (
-                      <Card key={item.id} sx={{ border: `1px solid ${cfg.border}`, borderLeft: `4px solid ${cfg.color}`, bgcolor: item.ativo ? cfg.bg : "white", opacity: item.ativo ? 1 : 0.6, overflow: "hidden" }}>
+                      <Card key={item.id} sx={{ border: `1px solid ${isDark ? cfg.darkBorder : cfg.border}`, borderLeft: `4px solid ${cfg.color}`, bgcolor: item.ativo ? (isDark ? cfg.darkBg : cfg.bg) : (isDark ? "background.paper" : "white"), opacity: item.ativo ? 1 : 0.6, overflow: "hidden" }}>
                         <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
                           <Box
                             onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -357,7 +357,7 @@ export default function CompromissosPage() {
                             </IconButton>
                           </Box>
                           <Collapse in={isExpanded}>
-                            <Box sx={{ px: 2, pt: 1, pb: 1.5, borderTop: `1px solid ${cfg.border}` }}>
+                            <Box sx={{ px: 2, pt: 1, pb: 1.5, borderTop: `1px solid ${isDark ? cfg.darkBorder : cfg.border}` }}>
                               {item.notas ? (
                                 <Box sx={{ display: "flex", gap: 0.75, alignItems: "flex-start" }}>
                                   <NotesRoundedIcon sx={{ fontSize: 13, color: "text.disabled", mt: "2px" }} />
@@ -382,7 +382,7 @@ export default function CompromissosPage() {
             );
 
             return isMobile ? (
-              <Accordion key={tipoKey} defaultExpanded sx={{ border: `1px solid ${cfg.border}`, bgcolor: cfg.bg, borderRadius: "12px !important", "&:before": { display: "none" }, boxShadow: "none" }}>
+              <Accordion key={tipoKey} defaultExpanded sx={{ border: `1px solid ${isDark ? cfg.darkBorder : cfg.border}`, bgcolor: isDark ? cfg.darkBg : cfg.bg, borderRadius: "12px !important", "&:before": { display: "none" }, boxShadow: "none" }}>
                 <AccordionSummary expandIcon={<ExpandMoreRoundedIcon />} sx={{ borderRadius: 2, minHeight: "48px !important", "& .MuiAccordionSummary-content": { my: "10px !important" } }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}>
                     <Typography sx={{ fontWeight: 700, color: cfg.color, fontSize: "0.9rem" }}>{cfg.label}</Typography>
@@ -399,7 +399,7 @@ export default function CompromissosPage() {
               </Accordion>
             ) : (
               <Box key={tipoKey}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1, mb: 1, borderRadius: 2, bgcolor: cfg.bg, border: `1px solid ${cfg.border}`, borderLeft: `4px solid ${cfg.color}` }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1, mb: 1, borderRadius: 2, bgcolor: isDark ? cfg.darkBg : cfg.bg, border: `1px solid ${isDark ? cfg.darkBorder : cfg.border}`, borderLeft: `4px solid ${cfg.color}` }}>
                   <Typography sx={{ fontWeight: 700, color: cfg.color }}>{cfg.label}</Typography>
                   <Tooltip title={cfg.tip} arrow>
                     <InfoOutlinedIcon sx={{ fontSize: 15, color: cfg.color, opacity: 0.7 }} />
