@@ -16,7 +16,6 @@ import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Skeleton from "@mui/material/Skeleton";
-import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -335,6 +334,36 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
         <Tab label="Avulsos" />
       </Tabs>
 
+      {tab > 0 && (
+        <Box sx={{ px: 2, pt: 1.5, display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<AddRoundedIcon />}
+            onClick={() => {
+              if (tab === 1) {
+                setAssinaturaDrawer({ open: true, edit: null });
+                setAssinaturaForm({ nome: "", dataInicio: currentMesAno(), dataFim: "", notas: "" });
+                setAssinaturaValorCents(0);
+                return;
+              }
+              if (tab === 2) {
+                setParcelamentoDrawer({ open: true, edit: null });
+                setParcelamentoForm({ nome: "", numeroParcelas: "12", mesInicio: currentMesAno(), notas: "" });
+                setParcelamentoValorTotalCents(0);
+                return;
+              }
+              setAvulsoDrawer({ open: true, edit: null });
+              setAvulsoForm({ nome: "", notas: "" });
+              setAvulsoValorCents(0);
+            }}
+            sx={{ borderRadius: 999, px: 1.8 }}
+          >
+            {tab === 1 ? "Nova assinatura" : tab === 2 ? "Novo parcelamento" : "Novo avulso"}
+          </Button>
+        </Box>
+      )}
+
       {/* ── Tab 0: Fatura ── */}
       {tab === 0 && (
         <Box sx={{ p: { xs: 2, md: 3 } }}>
@@ -408,10 +437,6 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
               </Box>
             </Box>
           ))}
-          <Fab size="small" color="primary" sx={{ position: "fixed", bottom: { xs: 72, md: 24 }, right: 24 }}
-            onClick={() => { setAssinaturaDrawer({ open: true, edit: null }); setAssinaturaForm({ nome: "", dataInicio: currentMesAno(), dataFim: "", notas: "" }); setAssinaturaValorCents(0); }}>
-            <AddRoundedIcon />
-          </Fab>
         </Box>
       )}
 
@@ -451,10 +476,6 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
               onDelete={() => deleteParcelamento(p.id)}
             />
           ))}
-          <Fab size="small" color="primary" sx={{ position: "fixed", bottom: { xs: 72, md: 24 }, right: 24 }}
-            onClick={() => { setParcelamentoDrawer({ open: true, edit: null }); setParcelamentoForm({ nome: "", numeroParcelas: "12", mesInicio: currentMesAno(), notas: "" }); setParcelamentoValorTotalCents(0); }}>
-            <AddRoundedIcon />
-          </Fab>
         </Box>
       )}
 
@@ -486,10 +507,6 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
               </Box>
             </Box>
           ))}
-          <Fab size="small" color="primary" sx={{ position: "fixed", bottom: { xs: 72, md: 24 }, right: 24 }}
-            onClick={() => { setAvulsoDrawer({ open: true, edit: null }); setAvulsoForm({ nome: "", notas: "" }); setAvulsoValorCents(0); }}>
-            <AddRoundedIcon />
-          </Fab>
         </Box>
       )}
 
