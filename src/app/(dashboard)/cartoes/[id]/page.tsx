@@ -16,6 +16,7 @@ import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Skeleton from "@mui/material/Skeleton";
+import Fab from "@mui/material/Fab";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -74,6 +75,18 @@ function formatMesLabel(mesAno: string): string {
   const [y, m] = mesAno.split("-");
   const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
   return `${meses[Number(m) - 1]} ${y}`;
+}
+
+function getCreateFabLabel(tab: number): string {
+  if (tab === 1) return "Nova assinatura";
+  if (tab === 2) return "Novo parcelamento";
+  return "Novo avulso";
+}
+
+function getCreateFabColor(tab: number, corCartao: string): string {
+  if (tab === 1) return "#8b5cf6";
+  if (tab === 2) return "#f59e0b";
+  return corCartao;
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
@@ -239,6 +252,28 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
     loadFatura();
   }
 
+  function openCreateDrawerForCurrentTab() {
+    if (tab === 1) {
+      setAssinaturaDrawer({ open: true, edit: null });
+      setAssinaturaForm({ nome: "", dataInicio: currentMesAno(), dataFim: "", notas: "" });
+      setAssinaturaValorCents(0);
+      return;
+    }
+
+    if (tab === 2) {
+      setParcelamentoDrawer({ open: true, edit: null });
+      setParcelamentoForm({ nome: "", numeroParcelas: "12", mesInicio: currentMesAno(), notas: "" });
+      setParcelamentoValorTotalCents(0);
+      return;
+    }
+
+    if (tab === 3) {
+      setAvulsoDrawer({ open: true, edit: null });
+      setAvulsoForm({ nome: "", notas: "" });
+      setAvulsoValorCents(0);
+    }
+  }
+
   if (!cartao) return (
     <Box sx={{ p: 3 }}>
       <Skeleton variant="rounded" height={180} sx={{ borderRadius: 4, mb: 2 }} />
@@ -333,36 +368,6 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
         <Tab label="Parcelamentos" />
         <Tab label="Avulsos" />
       </Tabs>
-
-      {tab > 0 && (
-        <Box sx={{ px: 2, pt: 1.5, display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            size="small"
-            variant="contained"
-            startIcon={<AddRoundedIcon />}
-            onClick={() => {
-              if (tab === 1) {
-                setAssinaturaDrawer({ open: true, edit: null });
-                setAssinaturaForm({ nome: "", dataInicio: currentMesAno(), dataFim: "", notas: "" });
-                setAssinaturaValorCents(0);
-                return;
-              }
-              if (tab === 2) {
-                setParcelamentoDrawer({ open: true, edit: null });
-                setParcelamentoForm({ nome: "", numeroParcelas: "12", mesInicio: currentMesAno(), notas: "" });
-                setParcelamentoValorTotalCents(0);
-                return;
-              }
-              setAvulsoDrawer({ open: true, edit: null });
-              setAvulsoForm({ nome: "", notas: "" });
-              setAvulsoValorCents(0);
-            }}
-            sx={{ borderRadius: 999, px: 1.8 }}
-          >
-            {tab === 1 ? "Nova assinatura" : tab === 2 ? "Novo parcelamento" : "Novo avulso"}
-          </Button>
-        </Box>
-      )}
 
       {/* ── Tab 0: Fatura ── */}
       {tab === 0 && (
@@ -508,6 +513,29 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
             </Box>
           ))}
         </Box>
+      )}
+
+      {tab > 0 && (
+        <Fab
+          color="primary"
+          aria-label={getCreateFabLabel(tab)}
+          onClick={openCreateDrawerForCurrentTab}
+          sx={{
+            position: "fixed",
+            bottom: { xs: 88, md: 28 },
+            right: 24,
+            zIndex: (theme) => theme.zIndex.drawer + 2,
+            bgcolor: getCreateFabColor(tab, cor),
+            color: "#fff",
+            boxShadow: "0 12px 28px rgba(0,0,0,0.28)",
+            "&:hover": {
+              bgcolor: getCreateFabColor(tab, cor),
+              filter: "brightness(0.93)",
+            },
+          }}
+        >
+          <AddRoundedIcon />
+        </Fab>
       )}
 
       {/* ── Assinatura Drawer ──────────────────────────────────────────── */}
