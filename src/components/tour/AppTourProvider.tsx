@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { TourProvider } from "@reactour/tour";
 import { useTheme } from "@mui/material/styles";
 import { TourStepCard } from "./TourStepCard";
@@ -10,6 +10,9 @@ interface AppTourProviderProps {
 }
 
 export function AppTourProvider({ children }: AppTourProviderProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const paperBg = theme.palette.background.paper;
@@ -42,6 +45,8 @@ export function AppTourProvider({ children }: AppTourProviderProps) {
     }),
     [isDark, paperBg],
   );
+
+  if (!mounted) return <>{children}</>;
 
   return (
     <TourProvider
