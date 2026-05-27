@@ -40,6 +40,8 @@ import { ParcelamentoListItem } from "@/components/cartoes/ParcelamentoListItem"
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { formatBRL } from "@/lib/utils/currency";
 import { formatMesAno } from "@/lib/utils/date";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -119,6 +121,9 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
   const [cancelarDialog, setCancelarDialog] = useState<{ open: boolean; assinatura: Assinatura | null }>({ open: false, assinatura: null });
   const [cancelarDataFim, setCancelarDataFim] = useState(currentMesAno());
   const [saving, setSaving] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   // Pagamento
   const [pagamento, setPagamento] = useState<{ pago: boolean; dataPagamento: string | null }>({ pago: false, dataPagamento: null });
@@ -645,10 +650,11 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
 
       {/* ── Assinatura Drawer ──────────────────────────────────────────── */}
       <Drawer
-        anchor="right"
+        anchor={isMobile ? "bottom" : "right"}
         open={assinaturaDrawer.open}
         onClose={() => setAssinaturaDrawer({ open: false, edit: null })}
-        slotProps={{ paper: { sx: { width: { xs: "100%", sm: 480 }, display: "flex", flexDirection: "column" } } }}
+        sx={{ zIndex: 1500 }}
+        slotProps={{ paper: { sx: { width: { sm: 480 }, height: { xs: "92dvh", sm: "100%" }, borderRadius: { xs: "20px 20px 0 0", sm: 0 }, display: "flex", flexDirection: "column" } } }}
       >
         <Box sx={{ background: "linear-gradient(135deg, #7c3aedee 0%, #8b5cf6 100%)", px: 3, pt: 3, pb: 2.5, color: "white", position: "relative", flexShrink: 0 }}>
           <IconButton onClick={() => setAssinaturaDrawer({ open: false, edit: null })} size="small" sx={{ position: "absolute", top: 12, right: 12, color: "white", bgcolor: "rgba(255,255,255,0.18)", "&:hover": { bgcolor: "rgba(255,255,255,0.28)" } }}>
@@ -723,7 +729,7 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
             slotProps={{ input: { startAdornment: <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1.5 }}><NotesRoundedIcon sx={{ fontSize: 18, color: "text.disabled" }} /></InputAdornment> } }}
           />
         </Box>
-        <Box sx={{ px: 3, py: 2, borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
+        <Box sx={{ px: 3, pt: 2, pb: "max(16px, env(safe-area-inset-bottom))", borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
           <Button fullWidth variant="outlined" onClick={() => setAssinaturaDrawer({ open: false, edit: null })}>Cancelar</Button>
           <Button fullWidth variant="contained" onClick={saveAssinatura} disabled={saving || !assinaturaForm.nome.trim() || assinaturaValorCents === 0} sx={{ bgcolor: "#8b5cf6", "&:hover": { bgcolor: "#8b5cf6", filter: "brightness(0.9)" } }}>
             {saving ? "Salvando..." : "Salvar"}
@@ -746,10 +752,11 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
 
       {/* ── Parcelamento Drawer ─────────────────────────────────────────── */}
       <Drawer
-        anchor="right"
+        anchor={isMobile ? "bottom" : "right"}
         open={parcelamentoDrawer.open}
         onClose={() => setParcelamentoDrawer({ open: false, edit: null })}
-        slotProps={{ paper: { sx: { width: { xs: "100%", sm: 480 }, display: "flex", flexDirection: "column" } } }}
+        sx={{ zIndex: 1500 }}
+        slotProps={{ paper: { sx: { width: { sm: 480 }, height: { xs: "92dvh", sm: "100%" }, borderRadius: { xs: "20px 20px 0 0", sm: 0 }, display: "flex", flexDirection: "column" } } }}
       >
         <Box sx={{ background: "linear-gradient(135deg, #d97706ee 0%, #f59e0b 100%)", px: 3, pt: 3, pb: 2.5, color: "white", position: "relative", flexShrink: 0 }}>
           <IconButton onClick={() => setParcelamentoDrawer({ open: false, edit: null })} size="small" sx={{ position: "absolute", top: 12, right: 12, color: "white", bgcolor: "rgba(255,255,255,0.18)", "&:hover": { bgcolor: "rgba(255,255,255,0.28)" } }}>
@@ -829,7 +836,7 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
             slotProps={{ input: { startAdornment: <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1.5 }}><NotesRoundedIcon sx={{ fontSize: 18, color: "text.disabled" }} /></InputAdornment> } }}
           />
         </Box>
-        <Box sx={{ px: 3, py: 2, borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
+        <Box sx={{ px: 3, pt: 2, pb: "max(16px, env(safe-area-inset-bottom))", borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
           <Button fullWidth variant="outlined" onClick={() => setParcelamentoDrawer({ open: false, edit: null })}>Cancelar</Button>
           <Button fullWidth variant="contained" onClick={saveParcelamento} disabled={saving || !parcelamentoForm.nome.trim() || parcelamentoValorTotalCents === 0} sx={{ bgcolor: "#f59e0b", "&:hover": { bgcolor: "#f59e0b", filter: "brightness(0.9)" } }}>
             {saving ? "Salvando..." : "Salvar"}
@@ -839,10 +846,11 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
 
       {/* ── Avulso Drawer ──────────────────────────────────────────────── */}
       <Drawer
-        anchor="right"
+        anchor={isMobile ? "bottom" : "right"}
         open={avulsoDrawer.open}
         onClose={() => setAvulsoDrawer({ open: false, edit: null })}
-        slotProps={{ paper: { sx: { width: { xs: "100%", sm: 480 }, display: "flex", flexDirection: "column" } } }}
+        sx={{ zIndex: 1500 }}
+        slotProps={{ paper: { sx: { width: { sm: 480 }, height: { xs: "92dvh", sm: "100%" }, borderRadius: { xs: "20px 20px 0 0", sm: 0 }, display: "flex", flexDirection: "column" } } }}
       >
         <Box sx={{ background: `linear-gradient(135deg, ${cor}ee 0%, ${cor} 100%)`, px: 3, pt: 3, pb: 2.5, color: "white", position: "relative", flexShrink: 0 }}>
           <IconButton onClick={() => setAvulsoDrawer({ open: false, edit: null })} size="small" sx={{ position: "absolute", top: 12, right: 12, color: "white", bgcolor: "rgba(255,255,255,0.18)", "&:hover": { bgcolor: "rgba(255,255,255,0.28)" } }}>
@@ -897,7 +905,7 @@ export default function CartaoDetailPage({ params }: { params: Promise<{ id: str
             slotProps={{ input: { startAdornment: <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1.5 }}><NotesRoundedIcon sx={{ fontSize: 18, color: "text.disabled" }} /></InputAdornment> } }}
           />
         </Box>
-        <Box sx={{ px: 3, py: 2, borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
+        <Box sx={{ px: 3, pt: 2, pb: "max(16px, env(safe-area-inset-bottom))", borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
           <Button fullWidth variant="outlined" onClick={() => setAvulsoDrawer({ open: false, edit: null })}>Cancelar</Button>
           <Button fullWidth variant="contained" onClick={saveAvulso} disabled={saving || !avulsoForm.nome.trim() || avulsoValorCents === 0} sx={{ bgcolor: cor, "&:hover": { bgcolor: cor, filter: "brightness(0.9)" } }}>
             {saving ? "Salvando..." : "Salvar"}

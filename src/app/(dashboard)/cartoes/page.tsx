@@ -29,6 +29,8 @@ import { usePageTour } from "@/components/tour/usePageTour";
 import { cartoesSteps } from "@/components/tour/steps/cartoes.steps";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { formatBRL } from "@/lib/utils/currency";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface Cartao {
   id: string;
@@ -49,6 +51,9 @@ const EMPTY_FORM = { nome: "", limiteCents: 0, diaVencimento: "1", cor: COR_PALE
 
 export default function CartoesPage() {
   usePageTour(cartoesSteps);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const router = useRouter();
   const [cartoes, setCartoes] = useState<Cartao[]>([]);
@@ -191,10 +196,11 @@ export default function CartoesPage() {
 
       {/* ── Cartão Form Drawer ─────────────────────────────────────────── */}
       <Drawer
-        anchor="right"
+        anchor={isMobile ? "bottom" : "right"}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        slotProps={{ paper: { sx: { width: { xs: "100%", sm: 480 }, display: "flex", flexDirection: "column" } } }}
+        sx={{ zIndex: 1500 }}
+        slotProps={{ paper: { sx: { width: { sm: 480 }, height: { xs: "92dvh", sm: "100%" }, borderRadius: { xs: "20px 20px 0 0", sm: 0 }, display: "flex", flexDirection: "column" } } }}
       >
         {/* Colored header */}
         <Box sx={{ background: `linear-gradient(135deg, ${form.cor}ee 0%, ${form.cor} 100%)`, px: 3, pt: 3, pb: 2.5, color: "white", position: "relative", flexShrink: 0 }}>
@@ -288,7 +294,7 @@ export default function CartoesPage() {
         </Box>
 
         {/* Footer */}
-        <Box sx={{ px: 3, py: 2, borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
+        <Box sx={{ px: 3, pt: 2, pb: "max(16px, env(safe-area-inset-bottom))", borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
           <Button fullWidth variant="outlined" onClick={() => setDrawerOpen(false)}>Cancelar</Button>
           <Button
             fullWidth
