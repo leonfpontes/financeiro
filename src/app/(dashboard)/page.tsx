@@ -223,16 +223,16 @@ export default function FotografiaPage() {
   ];
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, md: 3 } }}>
       {/* Nav do mês + toggle */}
       <Box
         data-tour="fotografia-mes-nav"
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", md: "row" },
           alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 1.5,
+          justifyContent: { xs: "center", md: "space-between" },
+          gap: { xs: 1, md: 1.5 },
           position: "sticky",
           top: { xs: 56, md: 0 },
           zIndex: 10,
@@ -244,7 +244,7 @@ export default function FotografiaPage() {
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton onClick={() => navMes(-1)} size="small"><ChevronLeftRoundedIcon /></IconButton>
-          <Typography variant="h6" sx={{ fontWeight: 800, minWidth: 180, textAlign: "center", letterSpacing: "-0.02em" }}>{mesLabel}</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 800, minWidth: 160, textAlign: "center", letterSpacing: "-0.02em" }}>{mesLabel}</Typography>
           <IconButton onClick={() => navMes(1)} size="small"><ChevronRightRoundedIcon /></IconButton>
         </Box>
         <ToggleButtonGroup value={modo} exclusive onChange={(_: React.MouseEvent, v: "planejado" | "real") => { if (v) setModo(v); }} size="small">
@@ -298,17 +298,17 @@ export default function FotografiaPage() {
       </Card>
 
       {/* Cards */}
-      <Box data-tour="fotografia-kpi-cards" sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: { xs: 1.5, sm: 2 } }}>
+      <Box data-tour="fotografia-kpi-cards" sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: { xs: 1, sm: 2 } }}>
         {cardConfig.map(({ key, label, icon: Icon, color, bg, border, valor }) => (
           <Card key={key} sx={{ border: `1px solid ${border}`, bgcolor: bg }}>
-            <CardContent sx={{ p: 2.5 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-                <Icon sx={{ color, fontSize: 20 }} />
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <CardContent sx={{ p: { xs: 1.5, sm: 2.5 }, "&:last-child": { pb: { xs: 1.5, sm: 2.5 } } }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: { xs: 1, sm: 1.5 } }}>
+                <Icon sx={{ color, fontSize: { xs: 16, sm: 20 }, flexShrink: 0 }} />
+                <Typography sx={{ fontSize: { xs: "0.6rem", sm: "0.75rem" }, fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.04em", lineHeight: 1.2 }}>
                   {label}
                 </Typography>
               </Box>
-              <Typography sx={{ fontSize: "1.5rem", fontWeight: 800, fontFamily: "monospace", color, letterSpacing: "-0.03em" }}>
+              <Typography sx={{ fontSize: { xs: "1.05rem", sm: "1.5rem" }, fontWeight: 800, fontFamily: "monospace", color, letterSpacing: "-0.03em" }}>
                 {formatBRL(valor)}
               </Typography>
               {modo === "real" && key !== "MARGEM" && (
