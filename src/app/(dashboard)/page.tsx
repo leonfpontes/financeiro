@@ -153,6 +153,13 @@ export default function FotografiaPage() {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
 
+  const insights = useMemo(
+    () => data && data.hasData
+      ? analyzeFotografia({ entradas: data.entradas, compromissos: data.compromissos, gastos: data.gastos, config: data.config, margem: data.margem, disponivel: data.disponivel, comprometidoPercent: data.comprometidoPercent, realizado: data.realizado, cartoes: data.cartoes })
+      : [],
+    [data]
+  );
+
   if (loading) return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 3 }} />
@@ -201,12 +208,6 @@ export default function FotografiaPage() {
   const { entradas, compromissos, gastos, margem, disponivel, comprometidoPercent, config, realizado } = data;
 
   const comprometidoBarW = Math.min(comprometidoPercent, 100);
-
-  const insights = useMemo(
-    () => analyzeFotografia({ entradas, compromissos, gastos, config, margem, disponivel, comprometidoPercent, realizado, cartoes: data?.cartoes }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data]
-  );
 
   const cardConfig = [
     { key: "ENTRADAS",        label: "Entradas",          icon: TrendingUpRoundedIcon,     color: "#10b981", bg: isDark ? "rgba(16,185,129,0.10)" : "#ecfdf5", border: isDark ? "rgba(16,185,129,0.22)" : "#a7f3d0", valor: entradas.totalPlanejado },
