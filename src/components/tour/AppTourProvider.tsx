@@ -4,13 +4,6 @@ import { useMemo } from "react";
 import { TourProvider } from "@reactour/tour";
 import { useTheme } from "@mui/material/styles";
 import { TourStepCard } from "./TourStepCard";
-import { tourSteps } from "./steps";
-import { useAutoOpenTour } from "./useTourHelper";
-
-function AutoOpenTour() {
-  useAutoOpenTour();
-  return null;
-}
 
 interface AppTourProviderProps {
   children: React.ReactNode;
@@ -52,7 +45,7 @@ export function AppTourProvider({ children }: AppTourProviderProps) {
 
   return (
     <TourProvider
-      steps={tourSteps}
+      steps={[]}
       ContentComponent={TourStepCard}
       styles={styles}
       showBadge={false}
@@ -61,8 +54,8 @@ export function AppTourProvider({ children }: AppTourProviderProps) {
       scrollSmooth
       padding={{ mask: 10, popover: [6, 12] }}
     >
-      <AutoOpenTour />
       {children}
     </TourProvider>
   );
 }
+

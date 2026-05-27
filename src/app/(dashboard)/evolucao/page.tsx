@@ -41,6 +41,8 @@ import {
 import { formatBRL } from "@/lib/utils/currency";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { analyzeEvolucao } from "@/lib/insights/rules/evolucao";
+import { usePageTour } from "@/components/tour/usePageTour";
+import { evolucaoSteps } from "@/components/tour/steps/evolucao.steps";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -252,6 +254,8 @@ function KpiCard({
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function EvolucaoPage() {
+  usePageTour(evolucaoSteps);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 

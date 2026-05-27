@@ -56,6 +56,8 @@ import { calcSonhoMensal, formatDataAlvo, mesesRestantes } from "@/lib/utils/son
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { analyzeCompromissos } from "@/lib/insights/rules/compromissos";
+import { usePageTour } from "@/components/tour/usePageTour";
+import { compromissosSteps } from "@/components/tour/steps/compromissos.steps";
 
 interface Compromisso {
   id: string;
@@ -111,6 +113,8 @@ const TIPO_ICONS = {
 };
 
 export default function CompromissosPage() {
+  usePageTour(compromissosSteps);
+
   const [items, setItems] = useState<Compromisso[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);

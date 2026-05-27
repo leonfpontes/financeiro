@@ -70,6 +70,8 @@ import { formatBRL } from "@/lib/utils/currency";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { analyzeGastos } from "@/lib/insights/rules/gastos";
+import { usePageTour } from "@/components/tour/usePageTour";
+import { gastosSteps } from "@/components/tour/steps/gastos.steps";
 
 interface Gasto {
   id: string;
@@ -182,6 +184,8 @@ function getCockpitMetrics(item: Gasto, todayStr: string) {
 }
 
 export default function GastosPage() {
+  usePageTour(gastosSteps);
+
   const [items, setItems] = useState<Gasto[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(0);

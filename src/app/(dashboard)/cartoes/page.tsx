@@ -25,6 +25,8 @@ import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import { CartaoCard } from "@/components/cartoes/CartaoCard";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { analyzeCartoes } from "@/lib/insights/rules/cartoes";
+import { usePageTour } from "@/components/tour/usePageTour";
+import { cartoesSteps } from "@/components/tour/steps/cartoes.steps";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { formatBRL } from "@/lib/utils/currency";
 
@@ -46,6 +48,8 @@ const COR_PALETTE = [
 const EMPTY_FORM = { nome: "", limiteCents: 0, diaVencimento: "1", cor: COR_PALETTE[0] };
 
 export default function CartoesPage() {
+  usePageTour(cartoesSteps);
+
   const router = useRouter();
   const [cartoes, setCartoes] = useState<Cartao[]>([]);
   const [loading, setLoading] = useState(true);

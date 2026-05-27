@@ -31,6 +31,8 @@ import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { useTheme } from "@mui/material/styles";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { analyzeFotografia } from "@/lib/insights/rules/fotografia";
+import { usePageTour } from "@/components/tour/usePageTour";
+import { fotografiaSteps } from "@/components/tour/steps/fotografia.steps";
 
 const MONTH_NAMES = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
@@ -74,6 +76,8 @@ function parseMesAno(mesAno: string): Date {
 }
 
 export default function FotografiaPage() {
+  usePageTour(fotografiaSteps, true);
+
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(" ")[0] ?? "você";
 

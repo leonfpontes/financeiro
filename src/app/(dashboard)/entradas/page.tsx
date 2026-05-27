@@ -47,6 +47,8 @@ import { formatBRL } from "@/lib/utils/currency";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { analyzeEntradas } from "@/lib/insights/rules/entradas";
+import { usePageTour } from "@/components/tour/usePageTour";
+import { entradasSteps } from "@/components/tour/steps/entradas.steps";
 
 interface Entrada {
   id: string;
@@ -76,6 +78,8 @@ const TIPO_DESCS_ENTRADA = {
 };
 
 export default function EntradasPage() {
+  usePageTour(entradasSteps);
+
   const [items, setItems] = useState<Entrada[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
