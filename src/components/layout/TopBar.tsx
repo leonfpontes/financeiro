@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { ThemeToggle } from "./ThemeToggle";
 import { TourButton } from "@/components/tour/TourButton";
+import { Logo } from "./Logo";
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "Fotografia",
@@ -54,23 +55,7 @@ export function TopBar() {
     >
       <Toolbar sx={{ justifyContent: "space-between", minHeight: "56px !important" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Box
-            sx={{
-              width: 28,
-              height: 28,
-              borderRadius: 1.5,
-              background: "linear-gradient(135deg, #6366f1, #4f46e5)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 14,
-              fontWeight: 700,
-              color: "white",
-              flexShrink: 0,
-            }}
-          >
-            ₢
-          </Box>
+          <Logo size={28} />
           <Typography sx={{ fontWeight: 700, fontSize: "1rem", color: "white", letterSpacing: "-0.02em" }}>
             {title}
           </Typography>
