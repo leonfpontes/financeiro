@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 # ── Todas as dependências (build) ───────────────────────────────────────────
 FROM base AS deps
@@ -35,14 +35,14 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
-# Deps de produção + Prisma CLI (pode ser devDep) sobreposto do stage deps
+# Deps de produção + Prisma CLI sobreposto do stage deps
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=deps /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
 COPY --from=deps /app/node_modules/prisma ./node_modules/prisma
 COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
 
 COPY --chown=nextjs:nodejs entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+RUN sed -i 's/\r//' /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
 USER nextjs
 EXPOSE 3000

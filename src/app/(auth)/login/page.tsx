@@ -18,6 +18,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import { Logo } from "@/components/layout/Logo";
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -72,8 +73,8 @@ export default function LoginPage() {
         <Box sx={{ position: "absolute", bottom: -20, left: -20, width: 72, height: 72, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
 
         <Box sx={{ position: "relative", zIndex: 1 }}>
-          <Box sx={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 52, height: 52, borderRadius: "14px", background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", mb: 1.5 }}>
-            <Typography sx={{ fontSize: 24, fontWeight: 900, color: "white", lineHeight: 1 }}>₢</Typography>
+          <Box sx={{ display: "inline-flex", alignItems: "center", justifyContent: "center", mb: 1.5 }}>
+            <Logo size={52} />
           </Box>
           <Typography sx={{ fontSize: 22, fontWeight: 800, color: "white", letterSpacing: "-0.03em", display: "block" }}>
             Financeiro
