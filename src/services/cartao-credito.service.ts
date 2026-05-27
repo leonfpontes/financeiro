@@ -3,7 +3,7 @@ import { CartaoCreditoRepository } from "@/repositories/cartao-credito.repositor
 import { CreateCartaoInput, UpdateCartaoInput } from "@/lib/validations/cartao.schema";
 
 export class CartaoCreditoService {
-  constructor(private readonly repo = new CartaoCreditoRepository()) {}
+  constructor(private readonly repo: CartaoCreditoRepository = new CartaoCreditoRepository()) {}
 
   async getAll(userId: string): Promise<CartaoCredito[]> { return this.repo.findAll(userId); }
 

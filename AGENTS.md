@@ -98,17 +98,32 @@ src/
 │   ├── cartoes/                 # CartaoCard, FaturaChart, ParcelamentoListItem
 │   └── ui/                      # Componentes base reutilizáveis
 ├── generated/prisma/            # ⛔ GERADO AUTOMATICAMENTE — não editar
+├── hooks/                       # React hooks reutilizáveis
+│   ├── useDelete.ts             # Fluxo de confirmação de exclusão
+│   ├── useFetch.ts              # Busca dados de API + loading + reload
+│   ├── useIsDark.ts             # boolean para modo escuro
+│   ├── useItemMenu.ts           # Ancora do menu MoreVert por item
+│   └── useViewMode.ts           # Persiste modo lista/grid no localStorage
 ├── lib/
+│   ├── api/
+│   │   ├── parse-body.ts        # parseJsonBody<T>(req, schema) — valida Zod + JSON
+│   │   └── require-auth.ts      # requireAuth() — extrai userId da sessão
 │   ├── api-response.ts          # Helpers ok() e fail()
 │   ├── auth.ts                  # Configuração NextAuth
 │   ├── prisma.ts                # Singleton do cliente Prisma
 │   ├── rate-limit.ts            # Rate limiter em memória (login)
 │   ├── theme.ts                 # lightTheme e darkTheme do MUI
 │   ├── utils/currency.ts        # formatBRL()
-│   └── validations/             # Schemas Zod por modelo
+│   ├── utils/date.ts            # addMonths, subMonths, currentMesAno, formatMesAno, …
+│   └── validations/             # Schemas Zod por modelo (common.ts com validadores base)
 ├── repositories/                # Queries Prisma (acesso a dados)
-├── services/                    # Regras de negócio
-└── types/                       # Types globais (api.types.ts, next-auth.d.ts)
+├── services/
+│   ├── base.service.ts          # BaseCrudService<T,C,U> — CRUD genérico via DIP
+│   └── …                        # Serviços concretos estendem BaseCrudService
+└── types/
+    ├── api.types.ts             # Types globais de API
+    ├── crud.types.ts            # ICrudRepository + ICrudService (interfaces genéricas)
+    └── next-auth.d.ts           # Extensão de tipos NextAuth
 ```
 
 ---
@@ -132,13 +147,15 @@ return fail("VALIDATION_ERROR", 400, details); // → { error: { ..., details } 
 
 ### 5.2 Autenticação em API Routes
 
+Use o helper `requireAuth()` em vez de chamar `getServerSession` diretamente:
+
 ```ts
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAuth } from "@/lib/api/require-auth";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return fail("UNAUTHORIZED", 401);
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
+  const { userId } = auth;
   // ...
 }
 ```
@@ -147,42 +164,82 @@ export async function GET() {
 
 ### 5.3 Validação com Zod
 
-Validar entrada em todo POST/PUT antes de qualquer operação no DB:
+Use o helper `parseJsonBody()` em rotas POST/PATCH:
 
 ```ts
-const parsed = createEntradaSchema.safeParse(await req.json());
-if (!parsed.success) return fail("VALIDATION_ERROR", 400, parsed.error.flatten());
-const data = parsed.data;
+import { parseJsonBody } from "@/lib/api/parse-body";
+
+const body = await parseJsonBody(req, createEntradaSchema);
+if (body.error) return body.error;
+const data = body.data; // tipado conforme o schema
 ```
 
 ### 5.4 Estrutura de um novo endpoint
 
 ```ts
 // src/app/api/[modulo]/route.ts
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { NextResponse } from "next/server";
 import { ok, fail } from "@/lib/api-response";
+import { requireAuth } from "@/lib/api/require-auth";
+import { parseJsonBody } from "@/lib/api/parse-body";
 import { MinhaEntidadeService } from "@/services/minha-entidade.service";
 import { createSchema } from "@/lib/validations/minha-entidade.schema";
 
 const service = new MinhaEntidadeService();
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return fail("UNAUTHORIZED", 401);
-  const data = await service.getAll(session.user.id);
-  return ok(data);
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
+  const data = await service.getAll(auth.userId);
+  return NextResponse.json(ok(data));
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return fail("UNAUTHORIZED", 401);
-  const parsed = createSchema.safeParse(await req.json());
-  if (!parsed.success) return fail("VALIDATION_ERROR", 400, parsed.error.flatten());
-  const result = await service.create(session.user.id, parsed.data);
-  return ok(result);
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
+  const body = await parseJsonBody(req, createSchema);
+  if (body.error) return body.error;
+  const result = await service.create(auth.userId, body.data);
+  return NextResponse.json(ok(result), { status: 201 });
 }
 ```
+
+### 5.5 Serviços CRUD — BaseCrudService
+
+Serviços que implementam CRUD padrão (getAll/getById/create/update/delete) devem estender `BaseCrudService`:
+
+```ts
+import { BaseCrudService } from "@/services/base.service";
+import { EntradaRepository } from "@/repositories/entrada.repository";
+import { Entrada } from "@/generated/prisma";
+import { CreateEntradaInput, UpdateEntradaInput } from "@/lib/validations/entrada.schema";
+
+export class EntradaService extends BaseCrudService<Entrada, CreateEntradaInput, UpdateEntradaInput> {
+  constructor(repo: EntradaRepository = new EntradaRepository()) {
+    super(repo);
+  }
+}
+```
+
+O repositório deve satisfazer `ICrudRepository<T, CreateInput, UpdateInput>` (tipagem estrutural — não é necessário `implements`).
+
+### 5.6 Hooks React Reutilizáveis
+
+| Hook | Arquivo | Uso |
+|------|---------|-----|
+| `useFetch<T>(url)` | `src/hooks/useFetch.ts` | Busca dados + `loading` + `reload()` |
+| `useDelete(buildUrl, onSuccess)` | `src/hooks/useDelete.ts` | Fluxo de confirmação de exclusão |
+| `useItemMenu<T>()` | `src/hooks/useItemMenu.ts` | Ancora do menu MoreVert por item |
+| `useViewMode(resource)` | `src/hooks/useViewMode.ts` | Persiste modo lista/grid no localStorage |
+| `useIsDark()` | `src/hooks/useIsDark.ts` | `boolean` para modo escuro (alternativa ao useTheme direto) |
+
+### 5.7 Componentes UI Reutilizáveis
+
+| Componente | Arquivo | Descrição |
+|------------|---------|-----------|
+| `DeleteConfirmDialog` | `src/components/ui/DeleteConfirmDialog.tsx` | Diálogo de confirmação de exclusão |
+| `EmptyState` | `src/components/ui/EmptyState.tsx` | Estado vazio com ícone + título + ação |
+| `StatusChip` | `src/components/ui/StatusChip.tsx` | Badge de status com suporte a dark mode |
 
 ---
 

@@ -1,38 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { AssinaturaService } from "@/services/assinatura.service";
 import { createAssinaturaSchema } from "@/lib/validations/cartao.schema";
-import { ok, fail } from "@/lib/api-response";
+import { ok } from "@/lib/api-response";
+import { requireAuth } from "@/lib/api/require-auth";
+import { parseJsonBody } from "@/lib/api/parse-body";
 
 export const dynamic = "force-dynamic";
 const svc = new AssinaturaService();
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions);
-  const userId = (session?.user as { id?: string })?.id;
-  if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
 
   const { id } = await params;
-  const data = await svc.getByCartao(id, userId);
+  const data = await svc.getByCartao(id, auth.userId);
   return NextResponse.json(ok(data.map((a) => ({ ...a, valor: Number(a.valor) }))));
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions);
-  const userId = (session?.user as { id?: string })?.id;
-  if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
 
   const { id } = await params;
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json(fail("VALIDATION", "Payload JSON inválido", 400), { status: 400 });
-  }
-  const parsed = createAssinaturaSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
+  const body = await parseJsonBody(req, createAssinaturaSchema);
+  if (body.error) return body.error;
 
-  const data = await svc.create(userId, id, parsed.data);
+  const data = await svc.create(auth.userId, id, body.data);
   return NextResponse.json(ok({ ...data, valor: Number(data.valor) }), { status: 201 });
 }

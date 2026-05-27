@@ -1,32 +1,29 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { ConfigService } from "@/services/config.service";
-import { updateConfigSchema, upsertRealizadoSchema } from "@/lib/validations/config.schema";
-import { ok, fail } from "@/lib/api-response";
+import { updateConfigSchema } from "@/lib/validations/config.schema";
+import { ok } from "@/lib/api-response";
+import { requireAuth } from "@/lib/api/require-auth";
+import { parseJsonBody } from "@/lib/api/parse-body";
 
 export const dynamic = "force-dynamic";
 
 const svc = new ConfigService();
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  const userId = (session?.user as { id?: string })?.id;
-  if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
 
-  const data = await svc.getConfig(userId);
+  const data = await svc.getConfig(auth.userId);
   return NextResponse.json(ok(data));
 }
 
 export async function PATCH(req: Request) {
-  const session = await getServerSession(authOptions);
-  const userId = (session?.user as { id?: string })?.id;
-  if (!userId) return NextResponse.json(fail("UNAUTHORIZED", "Não autorizado", 401), { status: 401 });
+  const auth = await requireAuth();
+  if (auth.error) return auth.error;
 
-  const body = await req.json();
-  const parsed = updateConfigSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json(fail("VALIDATION", "Dados inválidos", 400, parsed.error.flatten().fieldErrors as Record<string, string[]>), { status: 400 });
+  const body = await parseJsonBody(req, updateConfigSchema);
+  if (body.error) return body.error;
 
-  const data = await svc.updateConfig(userId, parsed.data);
+  const data = await svc.updateConfig(auth.userId, body.data);
   return NextResponse.json(ok(data));
 }

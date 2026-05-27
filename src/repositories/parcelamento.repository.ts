@@ -1,13 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Parcelamento, Prisma } from "@/generated/prisma";
 import { CreateParcelamentoInput, UpdateParcelamentoInput } from "@/lib/validations/cartao.schema";
-
-/** Adds `n` months to a "YYYY-MM" string */
-function addMonths(mesAno: string, n: number): string {
-  const [year, month] = mesAno.split("-").map(Number);
-  const date = new Date(year, month - 1 + n, 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
+import { addMonths } from "@/lib/utils/date";
 
 export class ParcelamentoRepository {
   async findByCartao(cartaoId: string, userId: string): Promise<Parcelamento[]> {

@@ -5,8 +5,8 @@ import { CreateAssinaturaInput, UpdateAssinaturaInput } from "@/lib/validations/
 
 export class AssinaturaService {
   constructor(
-    private readonly repo = new AssinaturaRepository(),
-    private readonly cartaoRepo = new CartaoCreditoRepository(),
+    private readonly repo: AssinaturaRepository = new AssinaturaRepository(),
+    private readonly cartaoRepo: CartaoCreditoRepository = new CartaoCreditoRepository(),
   ) {}
 
   async getByCartao(cartaoId: string, userId: string): Promise<Assinatura[]> {

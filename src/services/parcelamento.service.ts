@@ -2,17 +2,12 @@ import { Parcelamento } from "@/generated/prisma";
 import { ParcelamentoRepository } from "@/repositories/parcelamento.repository";
 import { CartaoCreditoRepository } from "@/repositories/cartao-credito.repository";
 import { CreateParcelamentoInput, UpdateParcelamentoInput } from "@/lib/validations/cartao.schema";
-
-function addMonths(mesAno: string, n: number): string {
-  const [year, month] = mesAno.split("-").map(Number);
-  const date = new Date(year, month - 1 + n, 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
+import { addMonths } from "@/lib/utils/date";
 
 export class ParcelamentoService {
   constructor(
-    private readonly repo = new ParcelamentoRepository(),
-    private readonly cartaoRepo = new CartaoCreditoRepository(),
+    private readonly repo: ParcelamentoRepository = new ParcelamentoRepository(),
+    private readonly cartaoRepo: CartaoCreditoRepository = new CartaoCreditoRepository(),
   ) {}
 
   async getByCartao(cartaoId: string, userId: string): Promise<Parcelamento[]> {

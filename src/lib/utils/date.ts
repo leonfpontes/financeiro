@@ -46,3 +46,32 @@ export function formatMesCurto(mesAno: string): string {
   const [y, m] = mesAno.split("-");
   return `${MESES_CURTOS[Number(m) - 1]}/${y.slice(2)}`;
 }
+
+/** Adds `n` months to a "YYYY-MM" string */
+export function addMonths(mesAno: string, n: number): string {
+  const [year, month] = mesAno.split("-").map(Number);
+  const date = new Date(year, month - 1 + n, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** Subtracts `n` months from a "YYYY-MM" string */
+export function subMonths(mesAno: string, n: number): string {
+  return addMonths(mesAno, -n);
+}
+
+/** Returns the current month as "YYYY-MM" */
+export function currentMesAno(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** Converts a Date to "YYYY-MM" */
+export function toMesAno(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** Parses "YYYY-MM" to a Date (first day of month) */
+export function parseMesAno(mesAno: string): Date {
+  const [y, m] = mesAno.split("-").map(Number);
+  return new Date(y, m - 1, 1);
+}

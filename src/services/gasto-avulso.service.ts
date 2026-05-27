@@ -5,8 +5,8 @@ import { CreateGastoAvulsoInput, UpdateGastoAvulsoInput } from "@/lib/validation
 
 export class GastoAvulsoService {
   constructor(
-    private readonly repo = new GastoAvulsoRepository(),
-    private readonly cartaoRepo = new CartaoCreditoRepository(),
+    private readonly repo: GastoAvulsoRepository = new GastoAvulsoRepository(),
+    private readonly cartaoRepo: CartaoCreditoRepository = new CartaoCreditoRepository(),
   ) {}
 
   async getByCartaoMes(cartaoId: string, userId: string, mesAno: string): Promise<GastoAvulsoCartao[]> {

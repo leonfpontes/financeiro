@@ -3,6 +3,7 @@ import { ParcelamentoRepository } from "@/repositories/parcelamento.repository";
 import { GastoAvulsoRepository } from "@/repositories/gasto-avulso.repository";
 import { CartaoCreditoRepository } from "@/repositories/cartao-credito.repository";
 import { Assinatura, GastoAvulsoCartao, Parcelamento } from "@/generated/prisma";
+import { addMonths, subMonths, currentMesAno } from "@/lib/utils/date";
 
 export interface FaturaDoMes {
   assinaturas: Assinatura[];
@@ -26,27 +27,12 @@ export interface RegressaoResult {
   forecast: Array<{ mesAno: string; valor: number }>;
 }
 
-function addMonths(mesAno: string, n: number): string {
-  const [year, month] = mesAno.split("-").map(Number);
-  const date = new Date(year, month - 1 + n, 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
-
-function subMonths(mesAno: string, n: number): string {
-  return addMonths(mesAno, -n);
-}
-
-function currentMesAno(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-}
-
 export class FaturaService {
   constructor(
-    private readonly assinaturaRepo = new AssinaturaRepository(),
-    private readonly parcelamentoRepo = new ParcelamentoRepository(),
-    private readonly avulsoRepo = new GastoAvulsoRepository(),
-    private readonly cartaoRepo = new CartaoCreditoRepository(),
+    private readonly assinaturaRepo: AssinaturaRepository = new AssinaturaRepository(),
+    private readonly parcelamentoRepo: ParcelamentoRepository = new ParcelamentoRepository(),
+    private readonly avulsoRepo: GastoAvulsoRepository = new GastoAvulsoRepository(),
+    private readonly cartaoRepo: CartaoCreditoRepository = new CartaoCreditoRepository(),
   ) {}
 
   async getFaturaDoMes(userId: string, cartaoId: string, mesAno: string): Promise<FaturaDoMes> {
