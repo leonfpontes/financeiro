@@ -311,7 +311,7 @@ export default function FotografiaPage() {
                     label="Valor real"
                     valueCents={realizadoEdit[key] ?? 0}
                     onValueChange={(cents) => setRealizadoEdit((p) => ({ ...p, [key]: cents }))}
-                    sx={{ flex: 1, "& .MuiInputBase-root": { bgcolor: "white" } }}
+                    sx={{ flex: 1, "& .MuiInputBase-root": { bgcolor: "background.paper" } }}
                   />
                   <Button
                     size="small"
