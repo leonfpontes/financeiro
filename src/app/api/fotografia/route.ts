@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ok, fail } from "@/lib/api-response";
 import { GastoTipo, PeriodoInput } from "@/generated/prisma";
 import { FaturaService } from "@/services/fatura.service";
+import { calcSonhoMensalFromDate } from "@/lib/utils/sonho";
 
 export const dynamic = "force-dynamic";
 
@@ -67,8 +68,13 @@ export async function GET(req: Request) {
   // Entradas
   const totalEntradas = entradas.reduce((acc, e) => acc + Number(e.valor), 0);
 
-  // Compromissos
-  const totalCompromissos = compromissos.reduce((acc, c) => acc + Number(c.valorMensal), 0);
+  // Compromissos (SONHO usa cálculo dinâmico baseado na meta e prazo)
+  const totalCompromissos = compromissos.reduce((acc, c) => {
+    if (c.tipo === "SONHO" && c.metaTotal && c.dataAlvo) {
+      return acc + calcSonhoMensalFromDate(Number(c.metaTotal), c.dataAlvo, hoje);
+    }
+    return acc + Number(c.valorMensal);
+  }, 0);
 
   // Gastos por tipo
   const fixos = gastos.filter(g => g.tipo === GastoTipo.FIXO);

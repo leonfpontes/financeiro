@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ok, fail } from "@/lib/api-response";
 import { GastoTipo, PeriodoInput } from "@/generated/prisma";
 import { FaturaService } from "@/services/fatura.service";
+import { calcSonhoMensalFromDate } from "@/lib/utils/sonho";
 
 export const dynamic = "force-dynamic";
 
@@ -135,7 +136,12 @@ export async function GET(req: Request) {
         });
 
         pEntradas        = entradas.reduce((acc, e) => acc + Number(e.valor), 0);
-        pCompromissos    = compromissos.reduce((acc, c) => acc + Number(c.valorMensal), 0);
+        pCompromissos    = compromissos.reduce((acc, c) => {
+          if (c.tipo === "SONHO" && c.metaTotal && c.dataAlvo) {
+            return acc + calcSonhoMensalFromDate(Number(c.metaTotal), c.dataAlvo, hoje);
+          }
+          return acc + Number(c.valorMensal);
+        }, 0);
         pGastosFixos     = activeGastos.filter((g) => g.tipo === GastoTipo.FIXO).reduce((acc, g) => acc + Number(g.valor), 0);
         pGastosVariaveis = activeGastos.filter((g) => g.tipo === GastoTipo.VARIAVEL).reduce((acc, g) => acc + calcGastoMensal(Number(g.valor), g.tipo, g.periodoInput, g.mesesOcorrencia), 0);
         pGastosSazonais  = activeGastos.filter((g) => g.tipo === GastoTipo.SAZONAL).reduce((acc, g) => acc + calcGastoMensal(Number(g.valor), g.tipo, g.periodoInput, g.mesesOcorrencia), 0);

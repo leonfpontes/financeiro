@@ -47,9 +47,12 @@ import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import NotesRoundedIcon from "@mui/icons-material/NotesRounded";
 import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import SavingsRoundedIcon from "@mui/icons-material/SavingsRounded";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { formatBRL } from "@/lib/utils/currency";
+import { calcSonhoMensal, formatDataAlvo, mesesRestantes } from "@/lib/utils/sonho";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { InsightCard } from "@/components/ui/InsightCard";
 import { analyzeCompromissos } from "@/lib/insights/rules/compromissos";
@@ -59,6 +62,8 @@ interface Compromisso {
   nome: string;
   tipo: "DIVIDA" | "INVESTIMENTO" | "SONHO";
   valorMensal: string;
+  metaTotal: string | null;
+  dataAlvo: string | null; // ISO date string, e.g. "2027-12-01T00:00:00.000Z"
   ativo: boolean;
   notas: string | null;
 }
@@ -121,6 +126,8 @@ export default function CompromissosPage() {
   const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState<"DIVIDA" | "INVESTIMENTO" | "SONHO">("DIVIDA");
   const [valorMensalCents, setValorMensalCents] = useState(0);
+  const [metaTotalCents, setMetaTotalCents] = useState(0);
+  const [dataAlvoForm, setDataAlvoForm] = useState(""); // YYYY-MM
   const [notas, setNotas] = useState("");
 
   const load = () => {
@@ -138,20 +145,32 @@ export default function CompromissosPage() {
 
   const openNew = (t: "DIVIDA" | "INVESTIMENTO" | "SONHO" = "DIVIDA") => {
     setEditing(null);
-    setNome(""); setTipo(t); setValorMensalCents(0); setNotas("");
+    setNome(""); setTipo(t); setValorMensalCents(0); setMetaTotalCents(0); setDataAlvoForm(""); setNotas("");
     setDialogOpen(true);
   };
 
   const openEdit = (item: Compromisso) => {
     setEditing(item);
-    setNome(item.nome); setTipo(item.tipo); setValorMensalCents(Math.round(parseFloat(item.valorMensal) * 100)); setNotas(item.notas ?? "");
+    setNome(item.nome);
+    setTipo(item.tipo);
+    setValorMensalCents(Math.round(parseFloat(item.valorMensal) * 100));
+    setMetaTotalCents(item.metaTotal ? Math.round(parseFloat(item.metaTotal) * 100) : 0);
+    setDataAlvoForm(item.dataAlvo ? item.dataAlvo.substring(0, 7) : "");
+    setNotas(item.notas ?? "");
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
-    if (!nome.trim() || valorMensalCents === 0) return;
+    const isSonho = tipo === "SONHO";
+    if (!nome.trim()) return;
+    if (isSonho && (metaTotalCents === 0 || !dataAlvoForm)) return;
+    if (!isSonho && valorMensalCents === 0) return;
+
     setSaving(true);
-    const body = { nome: nome.trim(), tipo, valorMensal: valorMensalCents / 100, notas: notas.trim() || null };
+    const body = isSonho
+      ? { nome: nome.trim(), tipo, metaTotal: metaTotalCents / 100, dataAlvo: dataAlvoForm, notas: notas.trim() || null }
+      : { nome: nome.trim(), tipo, valorMensal: valorMensalCents / 100, notas: notas.trim() || null };
+
     if (editing) {
       await fetch(`/api/compromissos/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     } else {
@@ -287,16 +306,30 @@ export default function CompromissosPage() {
                             <Typography variant="caption" color="text.secondary">/{VALOR_LABEL[tipoKey].split(" ")[0].toLowerCase()}</Typography>
                           </Box>
                           <Box sx={{ height: "1px", bgcolor: isDark ? cfg.darkBorder : cfg.border }} />
-                          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.5 }}>
-                            <Box>
-                              <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Anual</Typography>
-                              <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.78rem" }}>{formatBRL(valor * 12)}</Typography>
+                          {item.tipo === "SONHO" && item.metaTotal && item.dataAlvo ? (
+                            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.5 }}>
+                              <Box>
+                                <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Meta total</Typography>
+                                <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.78rem", color: cfg.color }}>{formatBRL(parseFloat(item.metaTotal))}</Typography>
+                              </Box>
+                              <Box>
+                                <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Prazo</Typography>
+                                <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.78rem" }}>{formatDataAlvo(item.dataAlvo)}</Typography>
+                                <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.68rem" }}>{mesesRestantes(item.dataAlvo, new Date())} meses</Typography>
+                              </Box>
                             </Box>
-                            <Box>
-                              <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Tipo</Typography>
-                              <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.78rem" }}>{cfg.itemLabel}</Typography>
+                          ) : (
+                            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.5 }}>
+                              <Box>
+                                <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Anual</Typography>
+                                <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.78rem" }}>{formatBRL(valor * 12)}</Typography>
+                              </Box>
+                              <Box>
+                                <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Tipo</Typography>
+                                <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.78rem" }}>{cfg.itemLabel}</Typography>
+                              </Box>
                             </Box>
-                          </Box>
+                          )}
                           {item.notas && (
                             <Box sx={{ display: "flex", gap: 0.75, alignItems: "flex-start" }}>
                               <NotesRoundedIcon sx={{ fontSize: 12, color: "text.disabled", mt: "2px", flexShrink: 0 }} />
@@ -365,7 +398,26 @@ export default function CompromissosPage() {
                           </Box>
                           <Collapse in={isExpanded}>
                             <Box sx={{ px: 2, pt: 1, pb: 1.5, borderTop: `1px solid ${isDark ? cfg.darkBorder : cfg.border}` }}>
-                              {item.notas ? (
+                              {item.tipo === "SONHO" && item.metaTotal && item.dataAlvo ? (
+                                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                  <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
+                                    <Box>
+                                      <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Meta total</Typography>
+                                      <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.82rem", color: cfg.color }}>{formatBRL(parseFloat(item.metaTotal))}</Typography>
+                                    </Box>
+                                    <Box>
+                                      <Typography variant="caption" color="text.disabled" sx={{ display: "block", lineHeight: 1.3 }}>Prazo</Typography>
+                                      <Typography variant="caption" sx={{ fontWeight: 700, display: "block", lineHeight: 1.4, fontSize: "0.82rem" }}>{formatDataAlvo(item.dataAlvo)} · {mesesRestantes(item.dataAlvo, new Date())} meses</Typography>
+                                    </Box>
+                                  </Box>
+                                  {item.notas && (
+                                    <Box sx={{ display: "flex", gap: 0.75, alignItems: "flex-start", mt: 0.5 }}>
+                                      <NotesRoundedIcon sx={{ fontSize: 13, color: "text.disabled", mt: "2px" }} />
+                                      <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.5 }}>{item.notas}</Typography>
+                                    </Box>
+                                  )}
+                                </Box>
+                              ) : item.notas ? (
                                 <Box sx={{ display: "flex", gap: 0.75, alignItems: "flex-start" }}>
                                   <NotesRoundedIcon sx={{ fontSize: 13, color: "text.disabled", mt: "2px" }} />
                                   <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.5 }}>{item.notas}</Typography>
@@ -513,19 +565,80 @@ export default function CompromissosPage() {
             slotProps={{ input: { startAdornment: <InputAdornment position="start"><LabelRoundedIcon sx={{ fontSize: 18, color: "text.disabled" }} /></InputAdornment> } }}
           />
 
-          {/* Valor */}
-          <CurrencyInput
-            label={VALOR_LABEL[tipo]}
-            valueCents={valorMensalCents}
-            onValueChange={setValorMensalCents}
-            fullWidth
-            required
-            helperText={
-              tipo === "DIVIDA" ? "Valor da parcela ou mínimo mensal a pagar" :
-              tipo === "INVESTIMENTO" ? "Quanto você aporta por mês nesse investimento" :
-              "Quanto reserva mensalmente para esse objetivo"
-            }
-          />
+          {/* Valor — condicional por tipo */}
+          {tipo !== "SONHO" ? (
+            <CurrencyInput
+              label={VALOR_LABEL[tipo]}
+              valueCents={valorMensalCents}
+              onValueChange={setValorMensalCents}
+              fullWidth
+              required
+              helperText={
+                tipo === "DIVIDA" ? "Valor da parcela ou mínimo mensal a pagar" :
+                "Quanto você aporta por mês nesse investimento"
+              }
+            />
+          ) : (
+            /* ── Campos exclusivos de SONHO ── */
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+              <CurrencyInput
+                label="Meta Total"
+                valueCents={metaTotalCents}
+                onValueChange={setMetaTotalCents}
+                fullWidth
+                required
+                helperText="Valor total que você quer acumular para realizar este sonho"
+              />
+
+              <TextField
+                label="Quando você quer realizar?"
+                type="month"
+                value={dataAlvoForm}
+                onChange={(e) => setDataAlvoForm(e.target.value)}
+                fullWidth
+                required
+                helperText="Mês e ano alvo"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CalendarMonthRoundedIcon sx={{ fontSize: 18, color: "text.disabled" }} />
+                      </InputAdornment>
+                    ),
+                    inputProps: {
+                      min: (() => {
+                        const d = new Date();
+                        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+                      })(),
+                    },
+                  },
+                }}
+              />
+
+              {/* Cálculo da reserva mensal */}
+              {metaTotalCents > 0 && dataAlvoForm && (() => {
+                const mensal = calcSonhoMensal(metaTotalCents / 100, dataAlvoForm, new Date());
+                const meses = mesesRestantes(dataAlvoForm, new Date());
+                return (
+                  <Box sx={{ p: 2, borderRadius: 2, bgcolor: isDark ? "rgba(245,158,11,0.10)" : "#fffbeb", border: "1px solid", borderColor: isDark ? "rgba(245,158,11,0.25)" : "#fde68a" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+                      <SavingsRoundedIcon sx={{ fontSize: 16, color: "#f59e0b" }} />
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                        Reserva mensal calculada
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ fontWeight: 800, fontFamily: "monospace", fontSize: "1.5rem", color: "#f59e0b", lineHeight: 1.2 }}>
+                      {formatBRL(mensal)}
+                      <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>/mês</Typography>
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {meses} {meses === 1 ? "mês" : "meses"} para realizar · meta: {formatBRL(metaTotalCents / 100)}
+                    </Typography>
+                  </Box>
+                );
+              })()}
+            </Box>
+          )}
 
           <Divider />
 
@@ -540,7 +653,7 @@ export default function CompromissosPage() {
             placeholder={
               tipo === "DIVIDA" ? "Taxa de juros, banco, nº do contrato..." :
               tipo === "INVESTIMENTO" ? "Corretora, tipo de ativo, meta de saldo..." :
-              "Prazo, destino, como vai realizar..."
+              "Viagem dos sonhos, carro, casa própria... conte mais sobre esse objetivo!"
             }
             helperText="Informações extras para lembrar depois"
             slotProps={{ input: { startAdornment: <InputAdornment position="start" sx={{ alignSelf: "flex-start", mt: 1.5 }}><NotesRoundedIcon sx={{ fontSize: 18, color: "text.disabled" }} /></InputAdornment> } }}
@@ -554,7 +667,7 @@ export default function CompromissosPage() {
             fullWidth
             variant="contained"
             onClick={handleSave}
-            disabled={saving || !nome.trim() || valorMensalCents === 0}
+            disabled={saving || !nome.trim() || (tipo === "SONHO" ? (metaTotalCents === 0 || !dataAlvoForm) : valorMensalCents === 0)}
             sx={{ bgcolor: TIPO_CONFIG[tipo].color, "&:hover": { bgcolor: TIPO_CONFIG[tipo].color, filter: "brightness(0.9)" } }}
           >
             {saving ? "Salvando..." : "Salvar"}
