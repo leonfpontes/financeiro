@@ -3,7 +3,6 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import { MuiProvider } from "@/components/providers/MuiProvider";
 import { ThemeModeProvider } from "@/components/providers/ThemeContext";
-import { AppTourProvider } from "@/components/tour/AppTourProvider";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -25,9 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <ThemeModeProvider>
           <AppRouterCacheProvider>
-            <MuiProvider>
-              <AppTourProvider>{children}</AppTourProvider>
-            </MuiProvider>
+            <MuiProvider>{children}</MuiProvider>
           </AppRouterCacheProvider>
         </ThemeModeProvider>
       </body>
