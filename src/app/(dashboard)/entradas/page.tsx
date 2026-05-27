@@ -316,10 +316,11 @@ export default function EntradasPage() {
 
       {/* ── Form Drawer ─────────────────────────────────────────────── */}
       <Drawer
-        anchor="right"
+        anchor={isMobile ? "bottom" : "right"}
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        slotProps={{ paper: { sx: { width: { xs: "100%", sm: 480 }, display: "flex", flexDirection: "column" } } }}
+        sx={{ zIndex: 1500 }}
+        slotProps={{ paper: { sx: { width: { sm: 480 }, height: { xs: "92dvh", sm: "100%" }, borderRadius: { xs: "20px 20px 0 0", sm: 0 }, display: "flex", flexDirection: "column" } } }}
       >
         {/* Colored header */}
         {(() => {
