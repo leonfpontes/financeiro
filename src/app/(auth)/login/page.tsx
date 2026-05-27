@@ -77,7 +77,7 @@ export default function LoginPage() {
             <Logo size={52} />
           </Box>
           <Typography sx={{ fontSize: 22, fontWeight: 800, color: "white", letterSpacing: "-0.03em", display: "block" }}>
-            Financeiro
+            GranaMinha
           </Typography>
           <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.65)", mt: 0.4, fontSize: "0.82rem" }}>
             Entre com sua conta para continuar

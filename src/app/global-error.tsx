@@ -18,7 +18,7 @@ export default function GlobalError({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Erro crítico — Financeiro</title>
+        <title>Erro crítico — GranaMinha</title>
         <style>{`
           *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -191,7 +191,7 @@ export default function GlobalError({
         <div className="card">
           <div className="card-header">
             <div className="label">Boletim de Calamidade Financeira</div>
-            <div className="title">Financeiro — Colapso Total do Sistema</div>
+            <div className="title">GranaMinha — Colapso Total do Sistema</div>
           </div>
           <div className="card-body">
             <div className="alert-box">

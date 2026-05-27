@@ -13,8 +13,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Financeiro — Controle Financeiro Familiar",
-  description: "Gerencie as finanças da sua família com facilidade",
+  title: "GranaMinha — Controle Financeiro Pessoal",
+  description: "Gerencie suas finanças com clareza: entradas, gastos, cartões e evolução em um só lugar.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

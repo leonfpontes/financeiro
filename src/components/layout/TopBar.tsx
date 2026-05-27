@@ -26,7 +26,7 @@ const PAGE_TITLES: Record<string, string> = {
 function getTitle(pathname: string): string {
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
   if (pathname.startsWith("/cartoes/")) return "Detalhe do Cartão";
-  return "Financeiro";
+  return "GranaMinha";
 }
 
 export function TopBar() {

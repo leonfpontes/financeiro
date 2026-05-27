@@ -6,7 +6,7 @@ export function Logo({ size = 36 }: { size?: number }) {
       viewBox="0 0 40 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Financeiro"
+      aria-label="GranaMinha"
     >
       <defs>
         {/* Main diagonal gradient: violet → indigo → deep navy */}
@@ -45,20 +45,19 @@ export function Logo({ size = 36 }: { size?: number }) {
         <rect width="40" height="22" fill="url(#lgShine)" />
       </g>
 
-      {/* ── F letterform ── */}
-
-      {/* Vertical stem */}
-      <rect x="9.5" y="9" width="5" height="22" rx="2.5" fill="white" />
-
-      {/* Top horizontal bar */}
-      <rect x="9.5" y="9" width="20.5" height="5" rx="2.5" fill="white" />
-
-      {/* Middle horizontal bar */}
-      <rect x="9.5" y="17.5" width="14.5" height="5" rx="2.5" fill="white" />
-
-      {/* ── Trend line in F's negative space (financial growth accent) ── */}
+      {/* ── G letterform ── */}
       <path
-        d="M 19.5 30.5 C 22.5 26 26 21.5 31 15"
+        d="M 28 12 A 10.5 10.5 0 1 0 28 28 L 28 21 L 20 21"
+        stroke="white"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+
+      {/* ── Trend line accent (financial growth) ── */}
+      <path
+        d="M 22 33 C 25 28 27.5 23.5 31 18"
         stroke="rgba(255,255,255,0.32)"
         strokeWidth="2"
         strokeLinecap="round"
@@ -68,7 +67,7 @@ export function Logo({ size = 36 }: { size?: number }) {
       {/* Glowing dot at tip of trend line */}
       <circle
         cx="31"
-        cy="15"
+        cy="18"
         r="2.5"
         fill="rgba(255,255,255,0.55)"
         filter="url(#lgGlow)"

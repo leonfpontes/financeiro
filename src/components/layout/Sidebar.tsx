@@ -62,7 +62,7 @@ export function Sidebar() {
           <Logo size={36} />
         </Box>
         <Typography sx={{ fontWeight: 700, fontSize: "1rem", color: "white", letterSpacing: "-0.02em" }}>
-          Financeiro
+          GranaMinha
         </Typography>
       </Box>
 

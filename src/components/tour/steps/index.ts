@@ -26,7 +26,7 @@ export const tourSteps: StepType[] = [
   step(
     {
       emoji: "🎉",
-      title: "Bem-vindo ao Financeiro!",
+      title: "Bem-vindo ao GranaMinha!",
       body: "Sou seu guia e vou te mostrar tudo em menos de 2 minutos. Preparado para dominar suas finanças? 🚀",
       accent: IND,
     },

@@ -1,4 +1,4 @@
-# Financeiro
+# GranaMinha
 
 Aplicação web de **gestão financeira pessoal**. Fotografia mensal do orçamento, controle de entradas, gastos, compromissos e cartões de crédito, com dark mode e gráficos de evolução.
 

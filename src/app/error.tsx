@@ -190,7 +190,7 @@ export default function ErrorPage({
                 Extrato de Emergência
               </Typography>
               <Typography sx={{ fontSize: "1rem", fontWeight: 800, color: "white" }}>
-                Financeiro — Conta Corrente
+                GranaMinha — Conta Corrente
               </Typography>
             </Box>
             <Chip
