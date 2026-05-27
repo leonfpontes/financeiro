@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -68,6 +68,8 @@ import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import ChildCareRoundedIcon from "@mui/icons-material/ChildCareRounded";
 import { formatBRL } from "@/lib/utils/currency";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
+import { InsightCard } from "@/components/ui/InsightCard";
+import { analyzeGastos } from "@/lib/insights/rules/gastos";
 
 interface Gasto {
   id: string;
@@ -307,6 +309,8 @@ export default function GastosPage() {
   const totalMensalSaz = items.filter(i => i.tipo === "SAZONAL" && isAtivo(i)).reduce((acc, i) => acc + gastoMensal(i), 0);
   const totals = [totalMensalFixo, totalMensalVar, totalMensalSaz];
 
+  const insights = useMemo(() => analyzeGastos(items, 0), [items]);
+
   const valPreview = valorCents / 100;
   const previewMensal = tipo === "VARIAVEL" && periodoInput === "SEMANAL" ? valPreview * SEMANAS_MES
     : tipo === "SAZONAL" ? (valPreview * meses.length) / 12 : 0;
@@ -334,6 +338,8 @@ export default function GastosPage() {
       </Box>
 
       {/* Tabs */}
+      <InsightCard insights={insights} loading={loading} />
+
       <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons="auto" sx={{ borderBottom: "1px solid #e2e8f0" }}>
         {["Fixos", "Variáveis", "Sazonais"].map((label, i) => (
           <Tab key={i} label={

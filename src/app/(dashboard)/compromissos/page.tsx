@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -51,6 +51,8 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { formatBRL } from "@/lib/utils/currency";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
+import { InsightCard } from "@/components/ui/InsightCard";
+import { analyzeCompromissos } from "@/lib/insights/rules/compromissos";
 
 interface Compromisso {
   id: string;
@@ -192,6 +194,8 @@ export default function CompromissosPage() {
   const isDark = theme.palette.mode === "dark";
   const menuItem = items.find((i) => i.id === menuItemId);
 
+  const insights = useMemo(() => analyzeCompromissos(items, 0), [items]);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
@@ -236,6 +240,8 @@ export default function CompromissosPage() {
       </Box>
 
       {/* Conteúdo principal */}
+      <InsightCard insights={insights} loading={loading} />
+
       {loading ? (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} variant="rectangular" height={80} sx={{ borderRadius: 2 }} />)}

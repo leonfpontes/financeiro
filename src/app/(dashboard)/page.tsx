@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Box from "@mui/material/Box";
@@ -29,6 +29,8 @@ import SavingsRoundedIcon from "@mui/icons-material/SavingsRounded";
 import { formatBRL } from "@/lib/utils/currency";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { useTheme } from "@mui/material/styles";
+import { InsightCard } from "@/components/ui/InsightCard";
+import { analyzeFotografia } from "@/lib/insights/rules/fotografia";
 
 const MONTH_NAMES = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
@@ -200,6 +202,12 @@ export default function FotografiaPage() {
 
   const comprometidoBarW = Math.min(comprometidoPercent, 100);
 
+  const insights = useMemo(
+    () => analyzeFotografia({ entradas, compromissos, gastos, config, margem, disponivel, comprometidoPercent, realizado, cartoes: data?.cartoes }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data]
+  );
+
   const cardConfig = [
     { key: "ENTRADAS",        label: "Entradas",          icon: TrendingUpRoundedIcon,     color: "#10b981", bg: isDark ? "rgba(16,185,129,0.10)" : "#ecfdf5", border: isDark ? "rgba(16,185,129,0.22)" : "#a7f3d0", valor: entradas.totalPlanejado },
     { key: "COMPROMISSOS",    label: "Compromissos",       icon: AccountBalanceRoundedIcon, color: "#6366f1", bg: isDark ? "rgba(99,102,241,0.10)" : "#eef2ff", border: isDark ? "rgba(99,102,241,0.22)" : "#c7d2fe", valor: compromissos.totalMensal },
@@ -238,6 +246,9 @@ export default function FotografiaPage() {
           <ToggleButton value="real" sx={{ px: 2, fontSize: "0.8rem" }}>Real vs Planejado</ToggleButton>
         </ToggleButtonGroup>
       </Box>
+
+      {/* Insights */}
+      <InsightCard insights={insights} />
 
       {/* Alertas */}
       {gastos.sazonais.alertaMes.length > 0 && (

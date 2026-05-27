@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -23,6 +23,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import LabelRoundedIcon from "@mui/icons-material/LabelRounded";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import { CartaoCard } from "@/components/cartoes/CartaoCard";
+import { InsightCard } from "@/components/ui/InsightCard";
+import { analyzeCartoes } from "@/lib/insights/rules/cartoes";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { formatBRL } from "@/lib/utils/currency";
 
@@ -113,6 +115,8 @@ export default function CartoesPage() {
   const pctColor = pctGlobal >= 90 ? "#ef4444" : pctGlobal >= 70 ? "#f59e0b" : "#22c55e";
   const cartoesSorted = [...cartoes].sort((a, b) => Number(b.ativo) - Number(a.ativo));
 
+  const insights = useMemo(() => analyzeCartoes(cartoes, null), [cartoes]);
+
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, pb: { xs: 10, md: 3 } }}>
       {/* Header */}
@@ -140,6 +144,8 @@ export default function CartoesPage() {
           </Box>
         </Box>
       )}
+
+      <InsightCard insights={insights} loading={loading} />
 
       {/* Grid */}
       {loading ? (

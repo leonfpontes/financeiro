@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -39,6 +39,8 @@ import {
   ReferenceLine,
 } from "recharts";
 import { formatBRL } from "@/lib/utils/currency";
+import { InsightCard } from "@/components/ui/InsightCard";
+import { analyzeEvolucao } from "@/lib/insights/rules/evolucao";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -341,6 +343,8 @@ export default function EvolucaoPage() {
   const hasData = series.length > 0 && series.some((s) => s.entradas > 0);
   const snapshotCount = series.filter((s) => s.hasSnapshot).length;
 
+  const insights = useMemo(() => analyzeEvolucao(series), [series]);
+
   // ── Loading skeleton ────────────────────────────────────────────────────
 
   if (loading) return (
@@ -425,6 +429,8 @@ export default function EvolucaoPage() {
       </Box>
 
       {/* ── KPI Row ── */}
+      <InsightCard insights={insights} />
+
       <Box sx={{ display: "flex", gap: 2, overflowX: "auto", pb: 0.5 }}>
         <KpiCard
           label="Média de Entradas"

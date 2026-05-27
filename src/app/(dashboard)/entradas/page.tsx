@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -45,6 +45,8 @@ import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
 import { formatBRL } from "@/lib/utils/currency";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
+import { InsightCard } from "@/components/ui/InsightCard";
+import { analyzeEntradas } from "@/lib/insights/rules/entradas";
 
 interface Entrada {
   id: string;
@@ -161,6 +163,8 @@ export default function EntradasPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isDark = theme.palette.mode === "dark";
 
+  const insights = useMemo(() => analyzeEntradas(items, total), [items, total]);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -192,6 +196,8 @@ export default function EntradasPage() {
           </Typography>
         </CardContent>
       </Card>
+
+      <InsightCard insights={insights} loading={loading} />
 
       {loading ? (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
