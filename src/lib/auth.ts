@@ -4,6 +4,20 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 
+function getClientIpFromHeaders(headers: Record<string, string | string[] | undefined> | undefined): string {
+  if (!headers) return "unknown";
+
+  const pickFirst = (value: string | string[] | undefined) => {
+    if (Array.isArray(value)) return value[0];
+    return value;
+  };
+
+  const forwarded = pickFirst(headers["x-forwarded-for"])?.split(",")[0]?.trim();
+  const realIp = pickFirst(headers["x-real-ip"])?.trim();
+
+  return forwarded || realIp || "unknown";
+}
+
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   // No NextAuth v4 o host confiável é controlado pela variável NEXTAUTH_URL no .env
@@ -22,18 +36,17 @@ export const authOptions: NextAuthOptions = {
         try {
           if (!credentials?.email || !credentials?.password) return null;
 
+          const email = credentials.email.trim().toLowerCase();
+
           // Rate-limit por IP — máx. 10 tentativas / 15 min (in-memory; instância única)
-          const ip =
-            (req?.headers?.["x-forwarded-for"] as string | undefined)
-              ?.split(",")[0]
-              ?.trim() ?? "unknown";
-          const { allowed } = checkRateLimit(`login:${ip}`, 10, 15 * 60 * 1000);
+          const ip = getClientIpFromHeaders(req?.headers);
+          const rateLimitKey = ip === "unknown" ? `login:email:${email}` : `login:ip:${ip}`;
+          const { allowed } = checkRateLimit(rateLimitKey, 10, 15 * 60 * 1000);
           if (!allowed) {
-            console.error("[Auth] Rate limit atingido para IP:", ip);
+            console.error("[Auth] Rate limit atingido para chave:", rateLimitKey);
             return null;
           }
 
-          const email = credentials.email.toLowerCase();
           const user = await prisma.user.findUnique({ where: { email } });
 
           if (!user) {
