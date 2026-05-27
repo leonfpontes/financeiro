@@ -19,26 +19,39 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Senha", type: "password" },
       },
       async authorize(credentials, req) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          if (!credentials?.email || !credentials?.password) return null;
 
-        // Rate-limit por IP — máx. 10 tentativas / 15 min (in-memory; instância única)
-        const ip =
-          (req?.headers?.["x-forwarded-for"] as string | undefined)
-            ?.split(",")[0]
-            ?.trim() ?? "unknown";
-        const { allowed } = checkRateLimit(`login:${ip}`, 10, 15 * 60 * 1000);
-        if (!allowed) return null;
+          // Rate-limit por IP — máx. 10 tentativas / 15 min (in-memory; instância única)
+          const ip =
+            (req?.headers?.["x-forwarded-for"] as string | undefined)
+              ?.split(",")[0]
+              ?.trim() ?? "unknown";
+          const { allowed } = checkRateLimit(`login:${ip}`, 10, 15 * 60 * 1000);
+          if (!allowed) {
+            console.error("[Auth] Rate limit atingido para IP:", ip);
+            return null;
+          }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase() },
-        });
+          const email = credentials.email.toLowerCase();
+          const user = await prisma.user.findUnique({ where: { email } });
 
-        if (!user) return null;
+          if (!user) {
+            console.error("[Auth] Usuário não encontrado:", email);
+            return null;
+          }
 
-        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
-        if (!isValid) return null;
+          const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+          if (!isValid) {
+            console.error("[Auth] Senha inválida para:", email, "| hash length:", user.passwordHash.length);
+            return null;
+          }
 
-        return { id: user.id, email: user.email, name: user.name };
+          return { id: user.id, email: user.email, name: user.name };
+        } catch (err) {
+          console.error("[Auth] Erro inesperado em authorize:", err);
+          return null;
+        }
       },
     }),
   ],
