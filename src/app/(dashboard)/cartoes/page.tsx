@@ -145,7 +145,9 @@ export default function CartoesPage() {
         </Box>
       )}
 
-      <InsightCard insights={insights} loading={loading} />
+      <Box sx={{ mb: 3 }}>
+        <InsightCard insights={insights} loading={loading} />
+      </Box>
 
       {/* Grid */}
       {loading ? (
