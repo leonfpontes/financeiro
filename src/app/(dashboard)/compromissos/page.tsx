@@ -482,7 +482,7 @@ export default function CompromissosPage() {
 
       </Box>
 
-      <Fab data-tour="compromissos-fab" color="primary" onClick={() => openNew()} sx={{ display: { xs: "flex", md: "none" }, position: "fixed", bottom: 80, right: 16, zIndex: 1200 }}>
+      <Fab data-tour="compromissos-fab" color="primary" onClick={() => openNew()} sx={{ display: { xs: "flex", md: "none" }, position: "fixed", bottom: "calc(80px + env(safe-area-inset-bottom))", right: 16, zIndex: 1200 }}>
         <AddRoundedIcon />
       </Fab>
 
@@ -665,7 +665,7 @@ export default function CompromissosPage() {
         </Box>
 
         {/* Fixed footer */}
-        <Box sx={{ px: 3, py: 2, borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
+        <Box sx={{ px: 3, pt: 2, pb: "max(16px, env(safe-area-inset-bottom))", borderTop: "1px solid", borderColor: "divider", display: "flex", gap: 1.5, flexShrink: 0 }}>
           <Button fullWidth variant="outlined" onClick={() => setDialogOpen(false)}>Cancelar</Button>
           <Button
             fullWidth

@@ -8,12 +8,14 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
 import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
+import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 
 const NAV = [
   { href: "/",             label: "Foto",     icon: PhotoCameraRoundedIcon },
   { href: "/entradas",    label: "Entradas", icon: TrendingUpRoundedIcon },
   { href: "/gastos",      label: "Gastos",   icon: ReceiptLongRoundedIcon },
   { href: "/compromissos",label: "Planos",   icon: AccountBalanceRoundedIcon },
+  { href: "/evolucao",    label: "Evolução", icon: ShowChartRoundedIcon },
   { href: "/cartoes",     label: "Cartões",  icon: CreditCardRoundedIcon },
 ];
 
@@ -78,7 +80,7 @@ export function BottomNav() {
             )}
             <Icon
               sx={{
-                fontSize: 22,
+                fontSize: 20,
                 color: active ? "#818cf8" : "rgba(148,163,184,0.55)",
                 position: "relative",
                 zIndex: 1,
