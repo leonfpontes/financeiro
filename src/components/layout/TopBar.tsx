@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { ThemeToggle } from "./ThemeToggle";
+import { TourButton } from "@/components/tour/TourButton";
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "Fotografia",
@@ -75,7 +76,8 @@ export function TopBar() {
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          <TourButton tooltipPlacement="bottom" sx={{ color: "rgba(255,255,255,0.6)", "&:hover": { color: "#a5b4fc", bgcolor: "rgba(99,102,241,0.2)" } }} />
           <ThemeToggle />
           <Avatar
             sx={{

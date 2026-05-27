@@ -186,7 +186,7 @@ export default function EntradasPage() {
         </Box>
       </Box>
 
-      <Card sx={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", border: "none" }}>
+      <Card data-tour="entradas-total-card" sx={{ background: "linear-gradient(135deg, #10b981, #059669)", color: "white", border: "none" }}>
         <CardContent sx={{ p: 2.5 }}>
           <Typography sx={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.75)" }}>
             Total Mensal Ativo
@@ -199,6 +199,7 @@ export default function EntradasPage() {
 
       <InsightCard insights={insights} loading={loading} />
 
+      <Box data-tour="entradas-list">
       {loading ? (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} variant="rectangular" height={72} sx={{ borderRadius: 2 }} />)}
@@ -303,7 +304,9 @@ export default function EntradasPage() {
         </Box>
       )}
 
-      <Fab color="primary" onClick={openNew} sx={{ display: { xs: "flex", md: "none" }, position: "fixed", bottom: 80, right: 16, zIndex: 1200 }}>
+      </Box>
+
+      <Fab data-tour="entradas-fab" color="primary" onClick={openNew} sx={{ display: { xs: "flex", md: "none" }, position: "fixed", bottom: 80, right: 16, zIndex: 1200 }}>
         <AddRoundedIcon />
       </Fab>
 

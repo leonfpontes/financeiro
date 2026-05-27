@@ -431,7 +431,7 @@ export default function EvolucaoPage() {
       {/* ── KPI Row ── */}
       <InsightCard insights={insights} />
 
-      <Box sx={{ display: "flex", gap: 2, overflowX: "auto", pb: 0.5 }}>
+      <Box data-tour="evolucao-kpi-row" sx={{ display: "flex", gap: 2, overflowX: "auto", pb: 0.5 }}>
         <KpiCard
           label="Média de Entradas"
           value={fmtBRL(avgEntradas)}
@@ -464,7 +464,7 @@ export default function EvolucaoPage() {
       </Box>
 
       {/* ── Gráfico 1: Fluxo de Caixa ── */}
-      <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+      <Card data-tour="evolucao-chart-fluxo" elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
         <CardContent sx={{ p: 3 }}>
           <SectionHeader
             title="Fluxo de Caixa"
@@ -513,7 +513,7 @@ export default function EvolucaoPage() {
       </Card>
 
       {/* ── Gráfico 2: Composição das Saídas ── */}
-      <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+      <Card data-tour="evolucao-chart-composicao" elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
         <CardContent sx={{ p: 3 }}>
           <SectionHeader
             title="Composição das Saídas"
@@ -542,7 +542,7 @@ export default function EvolucaoPage() {
       </Card>
 
       {/* ── Gráfico 3: % Comprometido ── */}
-      <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+      <Card data-tour="evolucao-chart-comprometido" elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
         <CardContent sx={{ p: 3 }}>
           <SectionHeader
             title="% da Renda Comprometida"

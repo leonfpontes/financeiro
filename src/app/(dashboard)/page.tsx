@@ -222,6 +222,7 @@ export default function FotografiaPage() {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Nav do mês + toggle */}
       <Box
+        data-tour="fotografia-mes-nav"
         sx={{
           display: "flex",
           alignItems: "center",
@@ -249,7 +250,9 @@ export default function FotografiaPage() {
       </Box>
 
       {/* Insights */}
-      <InsightCard insights={insights} />
+      <Box data-tour="fotografia-insights">
+        <InsightCard insights={insights} />
+      </Box>
 
       {/* Alertas */}
       {gastos.sazonais.alertaMes.length > 0 && (
@@ -264,7 +267,7 @@ export default function FotografiaPage() {
       )}
 
       {/* Hero — Disponível */}
-      <Card sx={{
+      <Card data-tour="fotografia-hero-disponivel" sx={{
         background: disponivel >= 0
           ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
           : "linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)",
@@ -291,7 +294,7 @@ export default function FotografiaPage() {
       </Card>
 
       {/* Cards */}
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>
+      <Box data-tour="fotografia-kpi-cards" sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>
         {cardConfig.map(({ key, label, icon: Icon, color, bg, border, valor }) => (
           <Card key={key} sx={{ border: `1px solid ${border}`, bgcolor: bg }}>
             <CardContent sx={{ p: 2.5 }}>
@@ -345,7 +348,7 @@ export default function FotografiaPage() {
       </Box>
 
       {/* Fórmula cascata */}
-      <Card sx={{ border: "1px solid", borderColor: "divider" }}>
+      <Card data-tour="fotografia-formula" sx={{ border: "1px solid", borderColor: "divider" }}>
         <CardContent sx={{ p: 2.5 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: "text.secondary" }}>Fórmula do Mês</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
@@ -380,7 +383,7 @@ export default function FotografiaPage() {
         const pctTeto = teto && teto > 0 ? Math.min((totalCart / teto) * 100, 100) : null;
         const tetoColor = pctTeto == null ? "#94a3b8" : pctTeto >= 90 ? "#ef4444" : pctTeto >= 70 ? "#f59e0b" : "#22c55e";
         return (
-          <Card sx={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+          <Card data-tour="fotografia-cartoes-resumo" sx={{ border: "1px solid rgba(255,255,255,0.08)" }}>
             <CardContent sx={{ p: 2.5 }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Cartões de Crédito</Typography>
@@ -423,7 +426,7 @@ export default function FotografiaPage() {
       })()}
 
       {/* Plano de Ação */}
-      <Card sx={{ border: "1px solid", borderColor: "divider" }}>
+      <Card data-tour="fotografia-plano-acao" sx={{ border: "1px solid", borderColor: "divider" }}>
         <CardContent sx={{ p: 2.5 }}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }} onClick={() => setPlanoAberto((p) => !p)}>
             <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "text.secondary" }}>Plano de Ação</Typography>

@@ -21,6 +21,7 @@ import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
+import { TourButton } from "@/components/tour/TourButton";
 
 const DRAWER_WIDTH = 260;
 
@@ -66,7 +67,7 @@ export function Sidebar() {
       </Box>
 
       {/* Nav */}
-      <List sx={{ px: 1.5, flex: 1 }} disablePadding>
+      <List sx={{ px: 1.5, flex: 1 }} disablePadding data-tour="sidebar-nav">
         {nav.map(({ href, label, icon: Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
           return (
@@ -109,7 +110,10 @@ export function Sidebar() {
           <Typography variant="caption" sx={{ color: "rgba(148,163,184,0.7)", fontSize: "0.72rem", letterSpacing: "0.04em" }}>
             APARÊNCIA
           </Typography>
-          <ThemeToggle />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+            <TourButton tooltipPlacement="right" />
+            <ThemeToggle />
+          </Box>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1, mb: 0.5 }}>
           <Avatar

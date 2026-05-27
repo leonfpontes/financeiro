@@ -219,7 +219,7 @@ export default function CompromissosPage() {
       </Box>
 
       {/* 3 métricas por tipo */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: { xs: 1, sm: 1.5 } }}>
+      <Box data-tour="compromissos-metricas" sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: { xs: 1, sm: 1.5 } }}>
         {(["DIVIDA", "INVESTIMENTO", "SONHO"] as const).map((tipoKey) => {
           const cfg = TIPO_CONFIG[tipoKey];
           const subtotal = items.filter((i) => i.tipo === tipoKey && i.ativo).reduce((acc, i) => acc + parseFloat(i.valorMensal), 0);
@@ -242,6 +242,7 @@ export default function CompromissosPage() {
       {/* Conteúdo principal */}
       <InsightCard insights={insights} loading={loading} />
 
+      <Box data-tour="compromissos-lista">
       {loading ? (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} variant="rectangular" height={80} sx={{ borderRadius: 2 }} />)}
@@ -423,7 +424,9 @@ export default function CompromissosPage() {
         </Box>
       )}
 
-      <Fab color="primary" onClick={() => openNew()} sx={{ display: { xs: "flex", md: "none" }, position: "fixed", bottom: 80, right: 16, zIndex: 1200 }}>
+      </Box>
+
+      <Fab data-tour="compromissos-fab" color="primary" onClick={() => openNew()} sx={{ display: { xs: "flex", md: "none" }, position: "fixed", bottom: 80, right: 16, zIndex: 1200 }}>
         <AddRoundedIcon />
       </Fab>
 

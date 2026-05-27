@@ -340,7 +340,7 @@ export default function GastosPage() {
       {/* Tabs */}
       <InsightCard insights={insights} loading={loading} />
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons="auto" sx={{ borderBottom: "1px solid #e2e8f0" }}>
+      <Tabs data-tour="gastos-tabs" value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons="auto" sx={{ borderBottom: "1px solid #e2e8f0" }}>
         {["Fixos", "Variáveis", "Sazonais"].map((label, i) => (
           <Tab key={i} label={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -352,6 +352,7 @@ export default function GastosPage() {
       </Tabs>
 
       {/* Lista */}
+      <Box data-tour="gastos-list">
       {loading ? (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} variant="rectangular" height={72} sx={{ borderRadius: 2 }} />)}
@@ -549,8 +550,11 @@ export default function GastosPage() {
         </Box>
       )}
 
+      </Box>
+
       {/* Dialog */}
       <Fab
+        data-tour="gastos-fab"
         color="primary"
         onClick={openNew}
         sx={{ display: { xs: "flex", md: "none" }, position: "fixed", bottom: 80, right: 16, zIndex: 1200 }}

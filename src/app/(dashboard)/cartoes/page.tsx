@@ -126,7 +126,7 @@ export default function CartoesPage() {
 
       {/* Summary banner */}
       {!loading && cartoes.length > 0 && (
-        <Box sx={{ mb: 3, p: 2.5, borderRadius: "16px", background: "linear-gradient(135deg, #1e1e3a 0%, #16213e 100%)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: 3, flexWrap: "wrap", alignItems: "center" }}>
+        <Box data-tour="cartoes-summary-banner" sx={{ mb: 3, p: 2.5, borderRadius: "16px", background: "linear-gradient(135deg, #1e1e3a 0%, #16213e 100%)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", gap: 3, flexWrap: "wrap", alignItems: "center" }}>
           <Box sx={{ flex: 1, minWidth: 140 }}>
             <Typography sx={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.55)", mb: 0.3 }}>Fatura total ({cartoes.length} cartão{cartoes.length > 1 ? "es" : ""})</Typography>
             <Typography sx={{ fontWeight: 800, fontSize: "1.4rem", color: pctColor, lineHeight: 1.2 }}>{formatBRL(totalFatura)}</Typography>
@@ -161,7 +161,7 @@ export default function CartoesPage() {
           <Typography variant="body2">Clique em + para adicionar</Typography>
         </Box>
       ) : (
-        <Grid container spacing={2}>
+        <Grid data-tour="cartoes-grid" container spacing={2}>
           {cartoesSorted.map((c) => (
             <Grid key={c.id} size={{ xs: 12, sm: 6, md: 4 }}>
               <CartaoCard
@@ -177,6 +177,7 @@ export default function CartoesPage() {
 
       {/* FAB */}
       <Fab
+        data-tour="cartoes-fab"
         color="primary"
         sx={{ position: "fixed", bottom: { xs: 72, md: 24 }, right: 24 }}
         onClick={openCreate}
