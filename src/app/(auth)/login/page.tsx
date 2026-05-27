@@ -56,7 +56,7 @@ export default function LoginPage() {
     if (res?.error) {
       setError("Email ou senha incorretos.");
     } else {
-      router.push("/");
+      router.push("/fotografia");
     }
   }
 
@@ -87,6 +87,12 @@ export default function LoginPage() {
 
       {/* ── Form ── */}
       <CardContent sx={{ px: { xs: 3, sm: 4 }, pt: 3.5, pb: "32px !important", backgroundColor: "#fff" }}>
+        <Typography variant="body2" sx={{ mb: 1.2, textAlign: "center", color: "#64748b", fontSize: "0.82rem" }}>
+          Quer conhecer antes de entrar?{" "}
+          <Link href="/" style={{ color: "#6366f1", fontWeight: 700, textDecoration: "none" }}>
+            Voltar para o início
+          </Link>
+        </Typography>
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {error && (

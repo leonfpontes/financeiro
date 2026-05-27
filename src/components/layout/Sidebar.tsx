@@ -26,7 +26,7 @@ import { TourButton } from "@/components/tour/TourButton";
 const DRAWER_WIDTH = 260;
 
 const nav = [
-  { href: "/",             label: "Fotografia",   icon: PhotoCameraRoundedIcon },
+  { href: "/fotografia",   label: "Fotografia",   icon: PhotoCameraRoundedIcon },
   { href: "/entradas",    label: "Entradas",      icon: TrendingUpRoundedIcon },
   { href: "/gastos",      label: "Gastos",        icon: ReceiptLongRoundedIcon },
   { href: "/compromissos", label: "Compromissos", icon: AccountBalanceRoundedIcon },
@@ -69,7 +69,7 @@ export function Sidebar() {
       {/* Nav */}
       <List sx={{ px: 1.5, flex: 1 }} disablePadding data-tour="sidebar-nav">
         {nav.map(({ href, label, icon: Icon }) => {
-          const active = href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+          const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <ListItemButton
               key={href}

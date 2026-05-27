@@ -11,7 +11,7 @@ import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 
 const NAV = [
-  { href: "/",             label: "Foto",     icon: PhotoCameraRoundedIcon },
+  { href: "/fotografia",   label: "Foto",     icon: PhotoCameraRoundedIcon },
   { href: "/entradas",    label: "Entradas", icon: TrendingUpRoundedIcon },
   { href: "/gastos",      label: "Gastos",   icon: ReceiptLongRoundedIcon },
   { href: "/compromissos",label: "Planos",   icon: AccountBalanceRoundedIcon },
@@ -22,9 +22,7 @@ const NAV = [
 export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const activeIndex = NAV.findIndex((n) =>
-    n.href === "/" ? pathname === "/" : pathname.startsWith(n.href)
-  );
+  const activeIndex = NAV.findIndex((n) => pathname.startsWith(n.href));
 
   return (
     <Box

@@ -15,7 +15,7 @@ import { TourButton } from "@/components/tour/TourButton";
 import { Logo } from "./Logo";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/": "Fotografia",
+  "/fotografia": "Fotografia",
   "/entradas": "Entradas",
   "/gastos": "Gastos",
   "/compromissos": "Compromissos",
