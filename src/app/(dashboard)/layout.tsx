@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <TopBar />
         <Sidebar />
         <Box component="main" sx={{ flex: 1, overflow: "auto", minWidth: 0 }}>
-          <Box sx={{ maxWidth: 1280, margin: "0 auto", padding: { xs: "68px 16px 80px", md: "28px 32px" } }}>
+          <Box sx={{ maxWidth: 1280, margin: "0 auto", padding: { xs: "68px 14px calc(72px + env(safe-area-inset-bottom))", md: "28px 32px" } }}>
             {children}
           </Box>
         </Box>

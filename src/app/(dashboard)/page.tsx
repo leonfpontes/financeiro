@@ -298,7 +298,7 @@ export default function FotografiaPage() {
       </Card>
 
       {/* Cards */}
-      <Box data-tour="fotografia-kpi-cards" sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2 }}>
+      <Box data-tour="fotografia-kpi-cards" sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: { xs: 1.5, sm: 2 } }}>
         {cardConfig.map(({ key, label, icon: Icon, color, bg, border, valor }) => (
           <Card key={key} sx={{ border: `1px solid ${border}`, bgcolor: bg }}>
             <CardContent sx={{ p: 2.5 }}>

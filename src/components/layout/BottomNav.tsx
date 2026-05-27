@@ -1,68 +1,108 @@
 "use client";
 
-import Paper from "@mui/material/Paper";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { usePathname, useRouter } from "next/navigation";
 import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
-import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 
 const NAV = [
-  { href: "/", label: "Fotografia", icon: PhotoCameraRoundedIcon },
-  { href: "/entradas", label: "Entradas", icon: TrendingUpRoundedIcon },
-  { href: "/gastos", label: "Gastos", icon: ReceiptLongRoundedIcon },
-  { href: "/compromissos", label: "Compromissos", icon: AccountBalanceRoundedIcon },
-  { href: "/cartoes", label: "Cartões", icon: CreditCardRoundedIcon },
+  { href: "/",             label: "Foto",     icon: PhotoCameraRoundedIcon },
+  { href: "/entradas",    label: "Entradas", icon: TrendingUpRoundedIcon },
+  { href: "/gastos",      label: "Gastos",   icon: ReceiptLongRoundedIcon },
+  { href: "/compromissos",label: "Planos",   icon: AccountBalanceRoundedIcon },
+  { href: "/cartoes",     label: "Cartões",  icon: CreditCardRoundedIcon },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const value = NAV.findIndex((n) => n.href === "/" ? pathname === "/" : pathname.startsWith(n.href));
+  const activeIndex = NAV.findIndex((n) =>
+    n.href === "/" ? pathname === "/" : pathname.startsWith(n.href)
+  );
 
   return (
-    <Paper
-      elevation={8}
+    <Box
       sx={{
-        display: { xs: "block", md: "none" },
+        display: { xs: "flex", md: "none" },
         position: "fixed",
         bottom: 0,
         left: 0,
         right: 0,
         zIndex: (theme) => theme.zIndex.drawer + 2,
+        background: "rgba(13, 11, 36, 0.88)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderTop: "1px solid rgba(255,255,255,0.07)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        alignItems: "center",
+        height: "calc(64px + env(safe-area-inset-bottom))",
       }}
     >
-      <BottomNavigation
-        value={value === -1 ? 0 : value}
-        onChange={(_, newValue) => router.push(NAV[newValue].href)}
-        sx={{
-          background: "linear-gradient(180deg, #1a1a2e 0%, #0f0c29 100%)",
-          height: 64,
-          "& .MuiBottomNavigationAction-root": {
-            color: "rgba(148,163,184,0.7)",
-            minWidth: 0,
-            padding: "6px 0",
-            "&.Mui-selected": {
-              color: "#818cf8",
-            },
-          },
-          "& .MuiBottomNavigationAction-label": {
-            fontSize: "0.6rem !important",
-            marginTop: "2px",
-            "&.Mui-selected": {
-              fontSize: "0.6rem !important",
-            },
-          },
-        }}
-      >
-        {NAV.map(({ label, icon: Icon }) => (
-          <BottomNavigationAction key={label} label={label} icon={<Icon sx={{ fontSize: 22 }} />} />
-        ))}
-      </BottomNavigation>
-    </Paper>
+      {NAV.map(({ href, label, icon: Icon }, i) => {
+        const active = i === activeIndex;
+        return (
+          <Box
+            key={href}
+            onClick={() => router.push(href)}
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "3px",
+              cursor: "pointer",
+              height: 64,
+              position: "relative",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            {active && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -60%)",
+                  width: 44,
+                  height: 30,
+                  borderRadius: "10px",
+                  bgcolor: "rgba(99,102,241,0.18)",
+                  border: "1px solid rgba(129,140,248,0.25)",
+                }}
+              />
+            )}
+            <Icon
+              sx={{
+                fontSize: 22,
+                color: active ? "#818cf8" : "rgba(148,163,184,0.55)",
+                position: "relative",
+                zIndex: 1,
+                transition: "color 0.2s",
+              }}
+            />
+            <Typography
+              sx={{
+                fontSize: "0.58rem",
+                fontWeight: active ? 700 : 400,
+                color: active ? "#a5b4fc" : "rgba(148,163,184,0.45)",
+                letterSpacing: active ? "0.01em" : 0,
+                position: "relative",
+                zIndex: 1,
+                transition: "color 0.2s",
+                lineHeight: 1,
+              }}
+            >
+              {label}
+            </Typography>
+          </Box>
+        );
+      })}
+    </Box>
   );
 }
+
