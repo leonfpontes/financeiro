@@ -97,11 +97,18 @@ export const authOptions: NextAuthOptions = {
         // Credentials: user.id já é o id do banco
         token.userId = user.id;
       }
+      // Preserva a foto do perfil (Google) no token
+      if (account?.provider === "google" && profile) {
+        token.picture = (profile as { picture?: string }).picture ?? token.picture;
+      }
       return token;
     },
     session({ session, token }) {
       if (token.userId && session.user) {
         (session.user as { id?: string }).id = token.userId as string;
+      }
+      if (token.picture && session.user) {
+        session.user.image = token.picture as string;
       }
       return session;
     },

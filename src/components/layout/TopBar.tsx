@@ -33,6 +33,7 @@ export function TopBar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const name = (session?.user as { name?: string })?.name ?? "Usuário";
+  const image = (session?.user as { image?: string | null })?.image;
   const initials = name
     .split(" ")
     .map((n) => n[0])
@@ -65,6 +66,7 @@ export function TopBar() {
           <TourButton tooltipPlacement="bottom" sx={{ color: "rgba(255,255,255,0.6)", "&:hover": { color: "#a5b4fc", bgcolor: "rgba(99,102,241,0.2)" } }} />
           <ThemeToggle />
           <Avatar
+            src={image ?? undefined}
             sx={{
               width: 32,
               height: 32,
@@ -76,7 +78,7 @@ export function TopBar() {
             }}
             onClick={(e) => setAnchorEl(e.currentTarget)}
           >
-            {initials}
+            {!image && initials}
           </Avatar>
         </Box>
 

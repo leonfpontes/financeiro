@@ -117,12 +117,13 @@ export function Sidebar() {
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1, mb: 0.5 }}>
           <Avatar
+            src={image ?? undefined}
             sx={{
               width: 30, height: 30, fontSize: "0.75rem", fontWeight: 700,
               bgcolor: "rgba(99,102,241,0.35)", color: "#a5b4fc",
             }}
           >
-            {initials}
+            {!image && initials}
           </Avatar>
           <Typography variant="caption" color="rgba(148,163,184,1)" noWrap>
             {name}
