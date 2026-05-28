@@ -1,17 +1,21 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
-  // No NextAuth v4 o host confiável é controlado pela variável NEXTAUTH_URL no .env
   pages: {
     signIn: "/login",
     newUser: "/register",
   },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -41,9 +45,15 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          // Conta criada via Google não tem senha local
+          if (!user.passwordHash) {
+            console.error("[Auth] Conta Google-only sem senha local:", email);
+            return null;
+          }
+
           const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
           if (!isValid) {
-            console.error("[Auth] Senha inválida para:", email, "| hash length:", user.passwordHash.length);
+            console.error("[Auth] Senha inválida para:", email);
             return null;
           }
 
@@ -56,8 +66,37 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
-      if (user) token.userId = user.id;
+    async signIn({ account, profile }) {
+      if (account?.provider === "google") {
+        const email = profile?.email?.toLowerCase();
+        if (!email) return false;
+
+        const existing = await prisma.user.findUnique({ where: { email } });
+        if (!existing) {
+          await prisma.user.create({
+            data: {
+              name: profile?.name ?? email,
+              email,
+              passwordHash: null,
+            },
+          });
+        }
+        return true;
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      if (account?.provider === "google") {
+        // Para Google, busca o userId real do banco pelo e-mail do perfil
+        const email = token.email?.toLowerCase();
+        if (email) {
+          const dbUser = await prisma.user.findUnique({ where: { email } });
+          if (dbUser) token.userId = dbUser.id;
+        }
+      } else if (user) {
+        // Credentials: user.id já é o id do banco
+        token.userId = user.id;
+      }
       return token;
     },
     session({ session, token }) {
