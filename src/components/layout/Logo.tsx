@@ -1,4 +1,14 @@
+"use client";
+
+import { useId } from "react";
+
 export function Logo({ size = 36 }: { size?: number }) {
+  const uid = useId().replace(/:/g, "");
+  const idBg = `${uid}Bg`;
+  const idShine = `${uid}Shine`;
+  const idClip = `${uid}Clip`;
+  const idGlow = `${uid}Glow`;
+
   return (
     <svg
       width={size}
@@ -10,25 +20,25 @@ export function Logo({ size = 36 }: { size?: number }) {
     >
       <defs>
         {/* Main diagonal gradient: violet → indigo → deep navy */}
-        <linearGradient id="lgBg" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+        <linearGradient id={idBg} x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#a78bfa" />
           <stop offset="48%" stopColor="#6366f1" />
           <stop offset="100%" stopColor="#312e81" />
         </linearGradient>
 
         {/* Top highlight — glassy sheen */}
-        <linearGradient id="lgShine" x1="20" y1="0" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+        <linearGradient id={idShine} x1="20" y1="0" x2="20" y2="22" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="white" stopOpacity={0.18} />
           <stop offset="100%" stopColor="white" stopOpacity={0} />
         </linearGradient>
 
         {/* Clip path matching rounded background */}
-        <clipPath id="lgClip">
+        <clipPath id={idClip}>
           <rect width="40" height="40" rx="11" />
         </clipPath>
 
         {/* Glow filter for the trend dot */}
-        <filter id="lgGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id={idGlow} x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="1.2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -38,11 +48,11 @@ export function Logo({ size = 36 }: { size?: number }) {
       </defs>
 
       {/* Background */}
-      <rect width="40" height="40" rx="11" fill="url(#lgBg)" />
+      <rect width="40" height="40" rx="11" fill={`url(#${idBg})`} />
 
       {/* Glass shine overlay (clipped to rounded rect) */}
-      <g clipPath="url(#lgClip)">
-        <rect width="40" height="22" fill="url(#lgShine)" />
+      <g clipPath={`url(#${idClip})`}>
+        <rect width="40" height="22" fill={`url(#${idShine})`} />
       </g>
 
       {/* ── G letterform ── */}
@@ -70,8 +80,9 @@ export function Logo({ size = 36 }: { size?: number }) {
         cy="18"
         r="2.5"
         fill="rgba(255,255,255,0.55)"
-        filter="url(#lgGlow)"
+        filter={`url(#${idGlow})`}
       />
     </svg>
   );
 }
+
