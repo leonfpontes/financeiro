@@ -96,7 +96,7 @@ export function TopBar() {
           <MenuItem
             onClick={() => {
               setAnchorEl(null);
-              signOut({ callbackUrl: "/login" });
+              signOut({ callbackUrl: "/" });
             }}
           >
             Sair

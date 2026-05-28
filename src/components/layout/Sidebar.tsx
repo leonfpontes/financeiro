@@ -131,7 +131,7 @@ export function Sidebar() {
           </Typography>
         </Box>
         <ListItemButton
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => signOut({ callbackUrl: "/" })}
           sx={{
             borderRadius: 2, px: 1.5, py: 1,
             color: "rgba(148,163,184,1)",
