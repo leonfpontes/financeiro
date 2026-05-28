@@ -93,13 +93,10 @@ export const authOptions: NextAuthOptions = {
           const dbUser = await prisma.user.findUnique({ where: { email } });
           if (dbUser) token.userId = dbUser.id;
         }
+        // token.picture é populado automaticamente pelo NextAuth com a foto do Google
       } else if (user) {
         // Credentials: user.id já é o id do banco
         token.userId = user.id;
-      }
-      // Preserva a foto do perfil (Google) no token
-      if (account?.provider === "google" && profile) {
-        token.picture = (profile as { picture?: string }).picture ?? token.picture;
       }
       return token;
     },
