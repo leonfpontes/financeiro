@@ -38,6 +38,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const name = session?.user?.name ?? "Usu\u00e1rio";
+  const image = session?.user?.image;
   const initials = name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
 
   return (
